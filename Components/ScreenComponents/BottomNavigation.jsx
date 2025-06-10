@@ -12,6 +12,7 @@ export default function BottomNavigation({ navigation }) {
         { name: 'SocialTab', icon: 'people' },
     ];
 
+
     return (
         <SafeAreaView edges={['bottom']} style={styles.navBar}>
             {navItems.map((item) => {
