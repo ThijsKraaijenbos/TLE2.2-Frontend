@@ -12,6 +12,7 @@ import ProgressList from "./Components/ProgressList";
 import Register from "./Components/Register";
 import SocialTab from "./Components/SocialTab";
 import TrophiesList from "./Components/TrophiesList";
+import Settings from "./Components/Settings";
 
 const Stack = createNativeStackNavigator()
 export default function App() {
@@ -27,6 +28,7 @@ export default function App() {
                 <Stack.Screen name="SocialTab" component={SocialTab} options={{title: "SocialTab", headerTitleAlign: "center"}}/>
                 <Stack.Screen name="TrophiesList" component={TrophiesList} options={{title: "TrophiesList", headerTitleAlign: "center"}}/>
                 <Stack.Screen name="Home" component={HomeScreen} options={{title: "Home", headerTitleAlign: "center"}}/>
+                <Stack.Screen name="Settings" component={Settings} options={{title: "Settings", headerTitleAlign: "center"}}/>
                 <Stack.Screen name="FruitList" component={FruitList} options={{title: "FruitList", headerTitleAlign: "center"}}/>
                 <Stack.Screen name="FruitDetails" component={FruitDetails} options={{title: "FruitDetails", headerTitleAlign: "center"}}/>
             </Stack.Navigator>
