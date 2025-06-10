@@ -6,7 +6,7 @@ export default function Register({navigation}){
         navigation.navigate('Home')
     }
     return(
-        <View>
+        <View style={{ flex: 1 }}>
             {/*Hier moet het form komen voor het inloggen*/}
             <Pressable onPress={()=> HandleRegistration()}>
                 <Text>Registreer</Text>
