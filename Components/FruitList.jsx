@@ -28,14 +28,7 @@ function borderColor(Hex){
     return returnCollor
 }
 
-// Utility to darken a hex color slightly
-function darkenHexColor(hex, amount = 20) {
-    let num = parseInt(hex.replace('#', ''), 16);
-    let r = Math.max(0, (num >> 16) - amount);
-    let g = Math.max(0, ((num >> 8) & 0x00FF) - amount);
-    let b = Math.max(0, (num & 0x0000FF) - amount);
-    return `#${(r << 16 | g << 8 | b).toString(16).padStart(6, '0')}`;
-}
+
 
 
 export default function FruitList({ navigation }) {
