@@ -6,15 +6,27 @@ import ProfileIcon from './ScreenComponents/ProfileIcon';
 import BottomNavigation from "./ScreenComponents/BottomNavigation";
 
 const fruitData = [
-    { name: 'Appel', image: require('../assets/fruitImages/S6pr7qTm-appelpitten-shutterstock-900-500.jpg'), checked: true, color: '#fbd2cd' },
-    { name: 'Banaan', image: require('../assets/fruitImages/WKOF_artikel_Zijn_bananen_gezond_700x400-1.webp'), checked: true, color: '#d7f2d1' },
-    { name: 'Kiwi', image: require('../assets/fruitImages/duerfen-hunde-kiwi-essen-1200x675.jpg'), checked: true, color: '#d7f2d1' },
-    { name: 'Mango', image: require('../assets/fruitImages/0097_Welke-vitamine-zit-er-in-een-mango_.jpg'), checked: true, color: '#fbd2cd' },
-    { name: 'Papaya', image: require('../assets/fruitImages/papaya-fruit.webp'), checked: false, color: '#fbd2cd' },
-    { name: 'Pitaja', image: require('../assets/fruitImages/istock_44367732_large.jpg'), checked: true, color: '#d7f2d1' },
-    { name: 'Ananas', image: require('../assets/fruitImages/Ananas_370x425.webp'), checked: false, color: '#fbd2cd' },
-    { name: 'Peer', image: require('../assets/fruitImages/peer.jpg'), checked: true, color: '#d7f2d1' },
+    { name: 'Appel', image: require('../assets/fruitImages/S6pr7qTm-appelpitten-shutterstock-900-500.jpg'), checked: true, color: '#FD9A90' },
+    { name: 'Banaan', image: require('../assets/fruitImages/WKOF_artikel_Zijn_bananen_gezond_700x400-1.webp'), checked: true, color: '#A8D363' },
+    { name: 'Kiwi', image: require('../assets/fruitImages/duerfen-hunde-kiwi-essen-1200x675.jpg'), checked: true, color: '#A8D363' },
+    { name: 'Mango', image: require('../assets/fruitImages/0097_Welke-vitamine-zit-er-in-een-mango_.jpg'), checked: true, color: '#FD9A90' },
+    { name: 'Papaya', image: require('../assets/fruitImages/papaya-fruit.webp'), checked: false, color: '#FD9A90' },
+    { name: 'Pitaja', image: require('../assets/fruitImages/istock_44367732_large.jpg'), checked: true, color: '#A8D363' },
+    { name: 'Ananas', image: require('../assets/fruitImages/Ananas_370x425.webp'), checked: false, color: '#FD9A90' },
+    { name: 'Peer', image: require('../assets/fruitImages/peer.jpg'), checked: true, color: '#A8D363' },
 ];
+
+
+function borderColor(Hex){
+    let returnCollor = ""
+    if(Hex == '#A8D363'){
+        returnCollor = '#45A85B'
+    }
+    else if(Hex == '#FD9A90'){
+        returnCollor = '#D83F2E'
+    }
+    return returnCollor
+}
 
 // Utility to darken a hex color slightly
 function darkenHexColor(hex, amount = 20) {
@@ -56,8 +68,8 @@ export default function FruitList({ navigation }) {
                         styles.fruitItem,
                         {
                             backgroundColor: item.color,
-                            borderColor: darkenHexColor(item.color),
-                            borderWidth: 1
+                            borderColor: borderColor(item.color),
+                            borderWidth: 3
                         }
                     ]}>
                         <Image source={item.image} style={styles.fruitImage} />
@@ -141,10 +153,10 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         alignItems: 'center',
         borderStyle: 'solid',
-        padding: 8,
+        padding: 0,
     },
     fruitImage: {
-        width: 80,
+        width: 150,
         height: 80,
         borderRadius: 8,
     },
