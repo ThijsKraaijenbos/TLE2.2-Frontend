@@ -25,7 +25,7 @@ export default function App() {
             <Stack.Navigator>
                 <Stack.Screen name="Login" component={Login} options={{title: "Login", headerTitleAlign: "center"}}/>
                 <Stack.Screen name="Profile" component={Profile} options={{headerShown: false}}/>
-                <Stack.Screen name="ProfileEdit" component={ProfileEdit} options={{title: "ProfileEdit", headerTitleAlign: "center"}}/>
+                <Stack.Screen name="ProfileEdit" component={ProfileEdit} options={{headerShown: false}}/>
                 <Stack.Screen name="ProgressList" component={ProgressList} options={{title: "ProgressList", headerTitleAlign: "center"}}/>
                 <Stack.Screen name="Register" component={Register} options={{title: "Register", headerTitleAlign: "center"}}/>
                 <Stack.Screen name="SocialTab" component={SocialTab} options={{title: "SocialTab", headerTitleAlign: "center"}}/>

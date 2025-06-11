@@ -6,7 +6,7 @@ import {useProfile} from './ProfileContext'
 
 export default function Profile({navigation}) {
 
-    const {profileImage} = useProfile()
+    const { profileImage, displayName } = useProfile();
 
     return (
         <ImageBackground
@@ -17,7 +17,7 @@ export default function Profile({navigation}) {
             <View style={styles.screen}>
                 <View style={styles.top}>
                     <View>
-                        <Pressable onPress={() => navigation.navigate('vorigescherm')}>
+                        <Pressable onPress={() => navigation.goBack()}>
                             <Ionicons name="arrow-back" size={50} style={styles.icon}/>
                         </Pressable>
                     </View>
@@ -32,7 +32,7 @@ export default function Profile({navigation}) {
                 </View>
 
                 <View style={styles.nameLine}>
-                    <Text style={styles.name}>Mand A. Rijn</Text>
+                    <Text style={styles.name}>{displayName}</Text>
                     <Pressable onPress={() => navigation.navigate('ProfileEdit')}>
                         <Ionicons name="pencil" size={32} style={styles.icon}/>
                     </Pressable>
@@ -83,7 +83,6 @@ const styles = StyleSheet.create({
     },
     background: {
         flex: 1,
-
     },
     profileContainer: {
         alignItems: 'center',
