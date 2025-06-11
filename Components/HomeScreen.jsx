@@ -5,6 +5,7 @@ import SettingsIcon from "./ScreenComponents/SettingsIcon";
 import {useEffect, useState} from "react";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Ionicons} from "@expo/vector-icons";
+
 const fruitCombinaties = [
     "1 banaan 120g + 10 aardbeien 80g = 200g",
     "1 appel 150g + 1 kiwi 50g = 200g",
@@ -17,12 +18,53 @@ const fruitCombinaties = [
     "1 appel 150g + 1 handje blauwe bessen 50g = 200g",
     "1 granaatappel 200g = 200g (eenmalige uitzondering, maar goed te combineren)"
 ];
-
+const DAILY_RESET_HOURS = 24;
+const DATA_KEY = 'daily_data';
+const TIMESTAMP_KEY = 'last_updated_time';
 
 export default function HomeScreen({navigation}) {
     const [streak, setStreak] = useState(0)
     const [daylyTask, setDaylyTask] = useState(false)
     const [userInfo, setUserInfo] = useState([])
+    const [suggestion, setSuggestion] = useState('')
+
+
+    const getRandomItem = () => {
+        const index = Math.floor(Math.random() * fruitCombinaties.length);
+        return fruitCombinaties[index];
+    };
+
+    useEffect(() => {
+        const checkAndUpdateInfo = async () => {
+            try {
+                const savedTime = await AsyncStorage.getItem(TIMESTAMP_KEY);
+                const savedSuggestion = await AsyncStorage.getItem(DATA_KEY);
+                const now = new Date().getTime();
+
+                if (savedTime) {
+                    const elapsed = now - parseInt(savedTime, 10);
+                    const hoursPassed = elapsed / (1000 * 60 * 60);
+
+                    if (hoursPassed >= DAILY_RESET_HOURS) {
+                        const newSuggestion = getRandomItem();
+                        await AsyncStorage.setItem(DATA_KEY, newSuggestion);
+                        await AsyncStorage.setItem(TIMESTAMP_KEY, now.toString());
+                        setSuggestion(newSuggestion);
+                    } else {
+                        setSuggestion(savedSuggestion || 'Geen informatie gevonden');
+                    }
+                } else {
+                    const newInfo = getRandomItem();
+                    await AsyncStorage.setItem(DATA_KEY, newInfo);
+                    await AsyncStorage.setItem(TIMESTAMP_KEY, now.toString());
+                    setSuggestion(newInfo);
+                }
+            } catch (error) {
+                console.error('Fout bij ophalen data:', error);
+            }
+        };
+        checkAndUpdateInfo();
+    }, []);
 
     useEffect(() => {
         const loadUser = async () => {
@@ -35,7 +77,7 @@ export default function HomeScreen({navigation}) {
     useEffect(() => {
         async function streakInformation() {
             try {
-                const response = await fetch(`${userInfo}`, {
+                const response = await fetch(`${userInfo.id}`, {
                     method: "GET",
                     headers: {
                         'Accept': 'application/json'
@@ -50,8 +92,8 @@ export default function HomeScreen({navigation}) {
         streakInformation()
     }, []);
 
-    const handleYesPressed = ()=>{
-        if (daylyTask===false) {
+    const handleYesPressed = () => {
+        if (daylyTask === false) {
             setStreak((oldStreak) => oldStreak + 1)
             setDaylyTask(true)
         } else {
@@ -59,7 +101,7 @@ export default function HomeScreen({navigation}) {
                 "Je mag maar 1 keer per dag op Ja drukken.")
         }
     }
-    
+
     return (
         <View style={styles.body}>
             <View>
@@ -79,18 +121,16 @@ export default function HomeScreen({navigation}) {
                 </View>
                 <View>
                     <View>
-                        <Pressable onPress={()=> handleYesPressed()}>
+                        <Pressable onPress={() => handleYesPressed()}>
                             <Text>JA!</Text>
                         </Pressable>
-                       <Pressable>
-                           <Text>Nee?</Text>
-                       </Pressable>
-
+                        <Pressable>
+                            <Text>Nee?</Text>
+                        </Pressable>
                     </View>
                     <View>
                         <Text>Suggestie van vandaag:</Text>
-                        <Text>20 druiven - 140g</Text>
-                        <Text>1 appel - 110g</Text>
+                        <Text>{suggestion}</Text>
                         <View>
                             <Text>Deze suggestie delen?</Text>
                             <Pressable>
@@ -106,7 +146,7 @@ export default function HomeScreen({navigation}) {
 }
 const styles = StyleSheet.create({
 
-    body:{
+    body: {
         marginTop: '10%',
     },
 
