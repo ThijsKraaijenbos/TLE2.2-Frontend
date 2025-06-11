@@ -2,6 +2,7 @@ import {StyleSheet} from 'react-native';
 import React from 'react';
 import {createNativeStackNavigator} from "@react-navigation/native-stack";
 import {NavigationContainer} from "@react-navigation/native";
+import { ProfileProvider } from './Components/ProfileContext';
 import HomeScreen from "./Components/HomeScreen";
 import FruitDetails from "./Components/FruitDetails";
 import FruitList from "./Components/FruitList";
@@ -14,14 +15,16 @@ import SocialTab from "./Components/SocialTab";
 import TrophiesList from "./Components/TrophiesList";
 import Settings from "./Components/Settings";
 
+
 const Stack = createNativeStackNavigator()
 export default function App() {
 
     return (
+        <ProfileProvider>
         <NavigationContainer>
             <Stack.Navigator>
                 <Stack.Screen name="Login" component={Login} options={{title: "Login", headerTitleAlign: "center"}}/>
-                <Stack.Screen name="Profile" component={Profile} options={{title: "Profile", headerTitleAlign: "center"}}/>
+                <Stack.Screen name="Profile" component={Profile} options={{headerShown: false}}/>
                 <Stack.Screen name="ProfileEdit" component={ProfileEdit} options={{title: "ProfileEdit", headerTitleAlign: "center"}}/>
                 <Stack.Screen name="ProgressList" component={ProgressList} options={{title: "ProgressList", headerTitleAlign: "center"}}/>
                 <Stack.Screen name="Register" component={Register} options={{title: "Register", headerTitleAlign: "center"}}/>
@@ -33,6 +36,7 @@ export default function App() {
                 <Stack.Screen name="FruitDetails" component={FruitDetails} options={{title: "FruitDetails", headerTitleAlign: "center"}}/>
             </Stack.Navigator>
         </NavigationContainer>
+        </ProfileProvider>
     );
 }
 
