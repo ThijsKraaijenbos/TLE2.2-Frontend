@@ -24,7 +24,7 @@ export default function App() {
                 <Stack.Screen name="Profile" component={Profile} options={{title: "Profile", headerTitleAlign: "center"}}/>
                 <Stack.Screen name="ProfileEdit" component={ProfileEdit} options={{title: "ProfileEdit", headerTitleAlign: "center"}}/>
                 <Stack.Screen name="ProgressList" component={ProgressList} options={{title: "ProgressList", headerTitleAlign: "center"}}/>
-                <Stack.Screen name="Register" component={Register} options={{title: "Register", headerTitleAlign: "center"}}/>
+                <Stack.Screen name="Register" component={Register} options={{headerShown: false}}/>
                 <Stack.Screen name="SocialTab" component={SocialTab} options={{title: "SocialTab", headerTitleAlign: "center"}}/>
                 <Stack.Screen name="TrophiesList" component={TrophiesList} options={{title: "TrophiesList", headerTitleAlign: "center"}}/>
                 <Stack.Screen name="Home" component={HomeScreen} options={{title: "Home", headerTitleAlign: "center"}}/>
