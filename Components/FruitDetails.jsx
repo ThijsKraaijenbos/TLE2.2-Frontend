@@ -50,7 +50,7 @@ export default function FruitDetails({ navigation }) {
                         <Text style={styles.detailText}>rating: geweldig!</Text>
                     </View>
                     <Image
-                        source={require('../assets/fruitImages/peer.jpg')}
+                        source={require('../assets/icon.png')}
                         style={styles.detailImage}
                     />
                 </View>
@@ -116,7 +116,8 @@ const styles = StyleSheet.create({
         padding: 12,
         marginVertical: 10,
         width: '100%',
-
+        borderWidth: 3,
+        borderColor: '#A8D363',
     },
     descriptionText: {
         fontSize: 14,
@@ -135,6 +136,8 @@ const styles = StyleSheet.create({
         padding: 10,
         flex: 1,
         marginRight: 8,
+        borderWidth: 3,
+        borderColor: '#A8D363',
     },
     detailText: {
         fontSize: 14,
@@ -151,6 +154,8 @@ const styles = StyleSheet.create({
         padding: 8,
         borderRadius: 8,
         marginTop: 14,
+        borderWidth: 3,
+        borderColor: '#A8D363',
     },
     funFactText: {
         fontSize: 14,
