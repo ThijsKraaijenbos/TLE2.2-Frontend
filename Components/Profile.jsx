@@ -6,7 +6,7 @@ import {useProfile} from './ProfileContext'
 
 export default function Profile({navigation}) {
 
-    const { profileImage, displayName } = useProfile();
+    const {profileImage, displayName} = useProfile();
 
     return (
         <ImageBackground
@@ -39,28 +39,28 @@ export default function Profile({navigation}) {
                 </View>
 
                 <View style={styles.boxBox}>
-                    <LinearGradient
-                        colors={['#3F5023', '#A8D363']}
-                        start={{x: 0, y: 0}}
-                        end={{x: 1, y: 0}}
-                        style={styles.box}
-                    >
-                        <Text style={styles.title}>Voortgang</Text>
-                        <Pressable onPress={() => navigation.navigate('ProgressList')}>
+                    <Pressable onPress={() => navigation.navigate('ProgressList')}>
+                        <LinearGradient
+                            colors={['#3F5023', '#A8D363']}
+                            start={{x: 0, y: 0}}
+                            end={{x: 1, y: 0}}
+                            style={styles.box}
+                        >
+                            <Text style={styles.title}>Voortgang</Text>
                             <Ionicons name="bar-chart" size={50} style={styles.boxIcon}/>
-                        </Pressable>
-                    </LinearGradient>
-                    <LinearGradient
-                        colors={['#3F5023', '#A8D363']}
-                        start={{x: 0, y: 0}}
-                        end={{x: 1, y: 0}}
-                        style={styles.box}
-                    >
-                        <Text style={styles.title}>Trofeeën</Text>
-                        <Pressable onPress={() => navigation.navigate('TrophiesList')}>
+                        </LinearGradient>
+                    </Pressable>
+                    <Pressable onPress={() => navigation.navigate('TrophiesList')}>
+                        <LinearGradient
+                            colors={['#3F5023', '#A8D363']}
+                            start={{x: 0, y: 0}}
+                            end={{x: 1, y: 0}}
+                            style={styles.box}
+                        >
+                            <Text style={styles.title}>Trofeeën</Text>
                             <Ionicons name="trophy" size={50} style={styles.boxIcon}/>
-                        </Pressable>
-                    </LinearGradient>
+                        </LinearGradient>
+                    </Pressable>
                 </View>
             </View>
         </ImageBackground>
