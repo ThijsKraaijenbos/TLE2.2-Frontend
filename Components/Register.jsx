@@ -140,7 +140,9 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         borderColor: '#A8D363',
         color: '#182700',
-        height: 50
+        height: 50,
+        fontSize: 20,
+        paddingLeft: 10
     },
     labels: {
         color: '#182700',
