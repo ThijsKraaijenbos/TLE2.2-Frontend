@@ -27,23 +27,28 @@ export default function HomeScreen({navigation}) {
     const [daylyTask, setDaylyTask] = useState(false)
     const [userInfo, setUserInfo] = useState([])
     const [suggestion, setSuggestion] = useState('')
+    const [streakDate, setStreakDate] = useState('')
 
     useEffect(() => {
         const loadStreakData = async () => {
             try {
-                const lastUpdate = await AsyncStorage.getItem('lastStreakUpdateTime');
+                const lastUpdate = await AsyncStorage.getItem('lastStreakUpdateTime'); // ← hier kun je ook je API response gebruiken
                 const savedStreak = await AsyncStorage.getItem('streak');
-                const now = new Date().getTime();
 
                 if (savedStreak) {
                     setStreak(parseInt(savedStreak));
                 }
 
+                const now = new Date();
                 if (lastUpdate) {
-                    const elapsed = now - parseInt(lastUpdate, 10);
-                    const hoursPassed = elapsed / (1000 * 60 * 60);
+                    const lastDate = new Date(lastUpdate);
 
-                    if (hoursPassed >= 24) {
+                    const isDifferentDay =
+                        lastDate.getFullYear() !== now.getFullYear() ||
+                        lastDate.getMonth() !== now.getMonth() ||
+                        lastDate.getDate() !== now.getDate();
+
+                    if (isDifferentDay) {
                         setDaylyTask(false);
                     } else {
                         setDaylyTask(true);
@@ -51,6 +56,7 @@ export default function HomeScreen({navigation}) {
                 } else {
                     setDaylyTask(false);
                 }
+
             } catch (error) {
                 console.error('Fout bij laden streak data:', error);
             }
@@ -58,6 +64,7 @@ export default function HomeScreen({navigation}) {
 
         loadStreakData();
     }, []);
+
 
     const getRandomItem = () => {
         const index = Math.floor(Math.random() * fruitCombinaties.length);
@@ -69,16 +76,21 @@ export default function HomeScreen({navigation}) {
             try {
                 const savedTime = await AsyncStorage.getItem(TIMESTAMP_KEY);
                 const savedSuggestion = await AsyncStorage.getItem(DATA_KEY);
-                const now = new Date().getTime();
+                const now = new Date();
 
                 if (savedTime) {
-                    const elapsed = now - parseInt(savedTime, 10);
-                    const hoursPassed = elapsed / (1000 * 60 * 60);
+                    const savedDate = new Date(parseInt(savedTime, 10));
 
-                    if (hoursPassed >= DAILY_RESET_HOURS) {
+                    // Check of het NIET dezelfde kalenderdag is
+                    const isDifferentDay =
+                        savedDate.getFullYear() !== now.getFullYear() ||
+                        savedDate.getMonth() !== now.getMonth() ||
+                        savedDate.getDate() !== now.getDate();
+
+                    if (isDifferentDay) {
                         const newSuggestion = getRandomItem();
                         await AsyncStorage.setItem(DATA_KEY, newSuggestion);
-                        await AsyncStorage.setItem(TIMESTAMP_KEY, now.toString());
+                        await AsyncStorage.setItem(TIMESTAMP_KEY, now.getTime().toString());
                         setSuggestion(newSuggestion);
                     } else {
                         setSuggestion(savedSuggestion || 'Geen informatie gevonden');
@@ -86,15 +98,17 @@ export default function HomeScreen({navigation}) {
                 } else {
                     const newInfo = getRandomItem();
                     await AsyncStorage.setItem(DATA_KEY, newInfo);
-                    await AsyncStorage.setItem(TIMESTAMP_KEY, now.toString());
+                    await AsyncStorage.setItem(TIMESTAMP_KEY, now.getTime().toString());
                     setSuggestion(newInfo);
                 }
             } catch (error) {
                 console.error('Fout bij ophalen data:', error);
             }
         };
+
         checkAndUpdateInfo();
     }, []);
+
 
     useEffect(() => {
         const loadUser = async () => {
@@ -166,6 +180,7 @@ export default function HomeScreen({navigation}) {
                     <View>
                         <Text>Suggestie van vandaag:</Text>
                         <Text>{suggestion}</Text>
+                        <Text>{streakDate}</Text>
                         <View>
                             <Text>Deze suggestie delen?</Text>
                             <Pressable>
