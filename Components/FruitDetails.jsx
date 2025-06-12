@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import SettingsIcon from './ScreenComponents/SettingsIcon';
 import ProfileIcon from './ScreenComponents/ProfileIcon';
+import BottomNavigation from "./ScreenComponents/BottomNavigation";
 
 export default function FruitDetails({ navigation }) {
     return (
@@ -60,6 +61,7 @@ export default function FruitDetails({ navigation }) {
                     <Text style={styles.funFactText}>fun fact:{"\n"}een appel per dag is gezond</Text>
                 </View>
             </View>
+            <BottomNavigation navigation={navigation}/>
         </ImageBackground>
     );
 }
