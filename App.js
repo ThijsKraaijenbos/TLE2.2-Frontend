@@ -23,17 +23,17 @@ export default function App() {
         <ProfileProvider>
         <NavigationContainer>
             <Stack.Navigator>
-                <Stack.Screen name="Login" component={Login} options={{title: "Login", headerTitleAlign: "center"}}/>
+                <Stack.Screen name="Login" component={Login} options={{headerShown: false}}/>
                 <Stack.Screen name="Profile" component={Profile} options={{headerShown: false}}/>
                 <Stack.Screen name="ProfileEdit" component={ProfileEdit} options={{headerShown: false}}/>
-                <Stack.Screen name="ProgressList" component={ProgressList} options={{title: "ProgressList", headerTitleAlign: "center"}}/>
-                <Stack.Screen name="Register" component={Register} options={{title: "Register", headerTitleAlign: "center"}}/>
-                <Stack.Screen name="SocialTab" component={SocialTab} options={{title: "SocialTab", headerTitleAlign: "center"}}/>
-                <Stack.Screen name="TrophiesList" component={TrophiesList} options={{title: "TrophiesList", headerTitleAlign: "center"}}/>
-                <Stack.Screen name="Home" component={HomeScreen} options={{title: "Home", headerTitleAlign: "center"}}/>
-                <Stack.Screen name="Settings" component={Settings} options={{title: "Settings", headerTitleAlign: "center"}}/>
-                <Stack.Screen name="FruitList" component={FruitList} options={{title: "FruitList", headerTitleAlign: "center"}}/>
-                <Stack.Screen name="FruitDetails" component={FruitDetails} options={{title: "FruitDetails", headerTitleAlign: "center"}}/>
+                <Stack.Screen name="ProgressList" component={ProgressList} options={{headerShown: false}}/>
+                <Stack.Screen name="Register" component={Register} options={{headerShown: false}}/>
+                <Stack.Screen name="SocialTab" component={SocialTab} options={{headerShown: false}}/>
+                <Stack.Screen name="TrophiesList" component={TrophiesList} options={{headerShown: false}}/>
+                <Stack.Screen name="Home" component={HomeScreen} options={{headerShown: false}}/>
+                <Stack.Screen name="Settings" component={Settings} options={{headerShown: false}}/>
+                <Stack.Screen name="FruitList" component={FruitList} options={{headerShown: false}}/>
+                <Stack.Screen name="FruitDetails" component={FruitDetails} options={{headerShown: false}}/>
             </Stack.Navigator>
         </NavigationContainer>
         </ProfileProvider>
