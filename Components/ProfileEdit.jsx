@@ -1,4 +1,5 @@
 import {Pressable, Text, View} from "react-native";
+import BottomNavigation from "./ScreenComponents/BottomNavigation";
 
 export default function ProfileEdit({navigation}){
     const EditHandler = ()=>{
@@ -6,7 +7,7 @@ export default function ProfileEdit({navigation}){
         navigation.navigate('Profile')
     }
     return(
-        <View>
+        <View style={{ flex: 1 }}>
             <View>
                 {/*Hier moet je de image kunnen aanpassen*/}
             </View>
@@ -14,6 +15,8 @@ export default function ProfileEdit({navigation}){
             <Pressable onPress={()=> EditHandler()}>
                 <Text>Pas aan!</Text>
             </Pressable>
+            <BottomNavigation navigation={navigation}/>
+
         </View>
     )
 }

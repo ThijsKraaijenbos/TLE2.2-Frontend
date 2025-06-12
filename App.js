@@ -20,7 +20,7 @@ export default function App() {
     return (
         <NavigationContainer>
             <Stack.Navigator>
-                <Stack.Screen name="Login" component={Login} options={{title: "Login", headerTitleAlign: "center"}}/>
+                <Stack.Screen name="Login" component={Login} options={{headerShown: false}}/>
                 <Stack.Screen name="Profile" component={Profile} options={{title: "Profile", headerTitleAlign: "center"}}/>
                 <Stack.Screen name="ProfileEdit" component={ProfileEdit} options={{title: "ProfileEdit", headerTitleAlign: "center"}}/>
                 <Stack.Screen name="ProgressList" component={ProgressList} options={{title: "ProgressList", headerTitleAlign: "center"}}/>
