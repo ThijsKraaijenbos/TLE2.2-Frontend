@@ -5,7 +5,7 @@ import SettingsIcon from "./ScreenComponents/SettingsIcon";
 
 export default function HomeScreen({navigation}){
     return (
-        <View>
+        <View style={{ flex: 1 }}>
             <SettingsIcon navigation={navigation}/>
             <ProfileIcon navigation={navigation}/>
             <Text>Hello world</Text>

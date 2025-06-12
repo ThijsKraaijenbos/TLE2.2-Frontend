@@ -5,7 +5,7 @@ import {Ionicons} from "@expo/vector-icons";
 
 export default function Profile({navigation}) {
     return (
-        <View>
+        <View style={{ flex: 1 }}>
             <SettingsIcon navigation={navigation}/>
             <Text>M. Andarijn</Text>
             <Pressable onPress={() => navigation.navigate('ProfileEdit')}>
