@@ -198,7 +198,7 @@ export default function HomeScreen({navigation}) {
 const styles = StyleSheet.create({
 
     body: {
-        marginTop: '10%',
+        flex: 1,
     },
 
     icon: {

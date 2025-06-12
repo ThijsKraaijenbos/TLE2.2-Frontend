@@ -19,6 +19,7 @@ const Stack = createNativeStackNavigator()
 export default function App() {
 
     return (
+        <ProfileProvider>
         <NavigationContainer>
             <Stack.Navigator>
                 <Stack.Screen name="Login" component={Login} options={{headerShown: false}}/>
