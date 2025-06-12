@@ -7,7 +7,7 @@ import {Ionicons} from "@expo/vector-icons";
 
 export default function HomeScreen({navigation}){
     return (
-        <View>
+        <View style={{ flex: 1 }}>
             <SettingsIcon navigation={navigation}/>
             <ProfileIcon navigation={navigation}/>
             <Pressable
