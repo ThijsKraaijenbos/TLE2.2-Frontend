@@ -33,7 +33,7 @@ export default function ProfileEdit({navigation}) {
                     </View>
                     <View>
                         <Pressable onPress={() => navigation.navigate('Home')}>
-                            <Ionicons name="logo-xbox" size={50} style={styles.icon}/>
+                            <Ionicons name="close" size={50} style={styles.icon}/>
                         </Pressable>
                     </View>
                 </View>
@@ -157,5 +157,9 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: '#182700',
         textAlign: 'center',
-    }
+    },
+    icon: {
+        marginHorizontal: 10,
+        color: '#000929'
+    },
 });
