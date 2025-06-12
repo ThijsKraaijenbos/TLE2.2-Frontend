@@ -12,7 +12,7 @@ const fruitData = [
     { name: 'Mango', image: require('../assets/fruitImages/0097_Welke-vitamine-zit-er-in-een-mango_.jpg'), checked: true, color: '#FD9A90' },
     { name: 'Papaya', image: require('../assets/fruitImages/papaya-fruit.webp'), checked: false, color: '#FD9A90' },
     { name: 'Pitaja', image: require('../assets/fruitImages/istock_44367732_large.jpg'), checked: true, color: '#A8D363' },
-    { name: 'Ananas', image: require('../assets/fruitImages/Ananas_370x425.webp'), checked: false, color: '#FD9A90' },
+ //   { name: 'Ananas', image: require('../assets/fruitImages/Ananas_370x425.webp'), checked: false, color: '#FD9A90' },
     { name: 'Peer', image: require('../assets/fruitImages/peer.jpg'), checked: true, color: '#A8D363' },
 ];
 
