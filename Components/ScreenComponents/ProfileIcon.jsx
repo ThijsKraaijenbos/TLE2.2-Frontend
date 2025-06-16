@@ -6,7 +6,7 @@ export default function ProfileIcon({ navigation }) {
     return (
         <SafeAreaView style={styles.container}>
             <Pressable onPress={() => navigation.navigate('Profile')}>
-                <Ionicons name="person-circle" size={32} style={styles.icon} />
+                <Ionicons name="person-circle" size={42} style={styles.icon} />
             </Pressable>
         </SafeAreaView>
     );

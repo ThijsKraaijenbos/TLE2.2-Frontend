@@ -6,7 +6,7 @@ export default function SettingsIcon({ navigation }) {
     return (
         <SafeAreaView style={styles.container}>
             <Pressable onPress={() => navigation.navigate('Settings')}>
-                <Ionicons name="options" size={32} style={styles.icon} />
+                <Ionicons name="options" size={42} style={styles.icon} />
             </Pressable>
         </SafeAreaView>
     );

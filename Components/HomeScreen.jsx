@@ -19,7 +19,6 @@ const fruitCombinaties = [
     "1 appel 150g +\n 1 handje blauwe bessen 50g = 200g",
     "1 granaatappel 200g = 200g"
 ];
-const DAILY_RESET_HOURS = 24;
 const DATA_KEY = 'daily_data';
 const TIMESTAMP_KEY = 'last_updated_time';
 
@@ -28,7 +27,7 @@ export default function HomeScreen({navigation}) {
     const [daylyTask, setDaylyTask] = useState(false)
     const [userInfo, setUserInfo] = useState([])
     const [suggestion, setSuggestion] = useState('')
-    const [streakDate, setStreakDate] = useState('')
+    const [bgColor, setBgColor] = useState('rgba(168, 211, 99, 0.8)');
 
     useEffect(() => {
         const loadStreakData = async () => {
@@ -39,6 +38,7 @@ export default function HomeScreen({navigation}) {
                 if (savedStreak) {
                     setStreak(parseInt(savedStreak));
                 }
+
 
                 const now = new Date();
                 if (lastUpdate) {
@@ -151,6 +151,14 @@ export default function HomeScreen({navigation}) {
         }
     };
 
+    const handleNeePressed = () => {
+        if(daylyTask === true){
+            alert("jij hebt vandaag al goed je fruit op heb je ingevuld!");
+        } else {
+            setBgColor('#fd9a90'); // update achtergrondkleur naar roodachtig
+        }
+    };
+
     return (
         <ImageBackground
             source={require('../assets/fruitbackground.png')}
@@ -180,12 +188,12 @@ export default function HomeScreen({navigation}) {
                 <Pressable style={styles.buttonYes} onPress={handleYesPressed}>
                     <Text style={styles.buttonText}>JA!</Text>
                 </Pressable>
-                <Pressable style={styles.buttonNo}>
+                <Pressable style={styles.buttonNo} onPress={handleNeePressed}>
                     <Text style={styles.buttonText}>Nee?</Text>
                 </Pressable>
             </View>
 
-            <View style={styles.suggestionContainer}>
+            <View style={[styles.suggestionContainer, { backgroundColor: bgColor }]}>
                 <Text style={styles.suggestionTitle}>Suggestie van vandaag:</Text>
                 <Text style={styles.suggestionText}>{suggestion}</Text>
 
@@ -299,7 +307,6 @@ const styles = StyleSheet.create({
     },
     suggestionContainer: {
         alignItems: 'center',
-        backgroundColor: 'rgba(168, 211, 99, 0.8)', // aangepaste opacity
         padding: 16,
         borderRadius: 12,
         marginTop: 20,
