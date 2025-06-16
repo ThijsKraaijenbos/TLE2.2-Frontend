@@ -275,13 +275,13 @@ const styles = StyleSheet.create({
         zIndex: 1,
     },
     buttonYes: {
-        backgroundColor: '#a8d5a2',
+        backgroundColor: '#a8d363',
         paddingHorizontal: 30,
         paddingVertical: 10,
         borderRadius: 10,
     },
     buttonNo: {
-        backgroundColor: '#f9c5c5',
+        backgroundColor: '#fd9a90',
         paddingHorizontal: 30,
         paddingVertical: 10,
         borderRadius: 10,
