@@ -1,7 +1,7 @@
 import {Pressable, StyleSheet, Text, View, ImageBackground, Image} from "react-native"
 import {Ionicons} from "@expo/vector-icons"
 import {LinearGradient} from 'expo-linear-gradient'
-import {useProfile} from './ProfileContext'
+import {useProfile} from './ScreenComponents/ProfileContext'
 
 
 export default function Profile({navigation}) {
