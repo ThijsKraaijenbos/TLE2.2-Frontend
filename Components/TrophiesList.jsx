@@ -32,7 +32,7 @@ export default function TrophiesList({navigation}) {
         { id: 18, title: "Tropisch Talent", description: "5 tropische fruitsoorten gegeten", icon: "fruit-pineapple", color: "#c09e2f", achieved: true },
         { id: 19, title: "TropenTijger", description: "10 tropische fruitsoorten gegeten", icon: "fruit-pineapple", color: "#ffb900", achieved: true },
 
-        // Steenvruchten (groot pit)
+        // Steenvruchten (grote pit)
         { id: 20, title: "Steenstart", description: "5 soorten steenvruchten gegeten", icon: "fruit-cherries", color: "#E91E63", achieved: true },
         { id: 21, title: "Steengoed", description: "10 soorten steenvruchten gegeten", icon: "fruit-cherries", color: "#BF360C", achieved: true },
 
@@ -44,7 +44,7 @@ export default function TrophiesList({navigation}) {
         { id: 22, title: "Citrusclown", description: "5 citrussoorten gegeten", icon: "fruit-citrus", color: "#68c711", achieved: true },
         { id: 23, title: "Citruskoning", description: "10 citrussoorten gegeten", icon: "fruit-citrus", color: "#efff00", achieved: true },
 
-        // Bessen (anders icoon dan pitvruchten)
+        // Bessen
         { id: 24, title: "Bessenbende", description: "5 soorten bessen gegeten", icon: "fruit-grapes", color: "#abd936", achieved: true },
         { id: 25, title: "Bessenbaas", description: "10 soorten bessen gegeten", icon: "fruit-grapes", color: "#6A1B9A", achieved: true },
 
