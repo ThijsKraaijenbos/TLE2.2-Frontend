@@ -97,7 +97,7 @@ export default function TrophiesList({navigation}) {
                                 <Text style={styles.trophyTitle}>{trophy.title}</Text>
                                 <Text style={styles.trophyDescription}>{trophy.description}</Text>
                             </View>
-                            <Text style={styles.trophyPercent}>24%</Text>
+                            <Text style={styles.trophyPercent}>69%</Text>
                         </View>
                     ))}
                 </ScrollView>
