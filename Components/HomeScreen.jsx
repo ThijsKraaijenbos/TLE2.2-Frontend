@@ -163,7 +163,7 @@ export default function HomeScreen({navigation}) {
             <ProfileIcon navigation={navigation} style={styles.profileIcon} />
 
             <View style={styles.headerContainer}>
-                <ImageBackground style={styles.streakBackground}>
+                <ImageBackground source={require('../assets/dragon-fruit (2).png')} style={styles.streakBackground}>
                     <Text style={styles.streakText}>{streak}</Text>
                 </ImageBackground>
             </View>
@@ -230,22 +230,29 @@ const styles = StyleSheet.create({
         zIndex: 1,
     },
     streakBackground: {
-        width: 100,
-        height: 100,
+        width: 140,
+        height: 140,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: 'rgba(200, 255, 200, 0.6)',
-        borderRadius: 50,
+        transform: [{rotate: "-45deg"}]
     },
     streakText: {
-        fontSize: 28,
+        marginTop: 35,
+        marginRight: 35,
+        fontSize: 50,
+        paddingLeft: 10,
+        paddingRight: 10,
+        borderRadius: 100,
+        backgroundColor: 'rgba(63,80,35,0.39)',
         fontWeight: 'bold',
-        color: '#3f5023',
+        color: 'rgb(234,252,210)',
+        transform: [{rotate: "45deg"}]
+
     },
     questionContainer: {
         marginTop: 30,
         alignItems: 'center',
-        backgroundColor: 'rgba(168, 211, 99, 0.53)', // aangepaste opacity
+        backgroundColor: 'rgba(168, 211, 99, 0.9)', // aangepaste opacity
         padding: 10,
         borderRadius: 12,
         marginHorizontal: 20,
@@ -292,7 +299,7 @@ const styles = StyleSheet.create({
     },
     suggestionContainer: {
         alignItems: 'center',
-        backgroundColor: 'rgba(168, 211, 99, 0.53)', // aangepaste opacity
+        backgroundColor: 'rgba(168, 211, 99, 0.8)', // aangepaste opacity
         padding: 16,
         borderRadius: 12,
         marginTop: 20,
