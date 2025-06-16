@@ -4,7 +4,7 @@ import {LinearGradient} from 'expo-linear-gradient'
 import {useProfile} from './ScreenComponents/ProfileContext'
 
 
-export default function Profile({navigation}) {
+export default function ProgressList({navigation}) {
 
     const {profileImage, displayName} = useProfile();
 
