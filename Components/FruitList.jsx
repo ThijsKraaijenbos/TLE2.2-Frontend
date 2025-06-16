@@ -5,6 +5,8 @@ import DropDownPicker from 'react-native-dropdown-picker';
 import SettingsIcon from './ScreenComponents/SettingsIcon';
 import ProfileIcon from './ScreenComponents/ProfileIcon';
 import BottomNavigation from './ScreenComponents/BottomNavigation';
+import { ImageBackground } from 'react-native';
+
 
 const initialFruitData = [
     { name: 'Appel', checked: false, image: require('../assets/fruitImages/S6pr7qTm-appelpitten-shutterstock-900-500.jpg'), color: '#FD9A90' },
@@ -48,6 +50,12 @@ export default function FruitList({ navigation }) {
     };
 
     return (
+        <ImageBackground
+            source={require('../assets/fruitbackground.png')}
+            style={styles.background}
+            resizeMode="cover"
+        >
+            <View style={styles.imageOverlay} />
         <SafeAreaView style={styles.container}>
             <SettingsIcon navigation={navigation} style={styles.settingsIcon} />
             <ProfileIcon navigation={navigation} style={styles.profileIcon} />
@@ -115,13 +123,24 @@ export default function FruitList({ navigation }) {
 
             <BottomNavigation navigation={navigation} />
         </SafeAreaView>
+        </ImageBackground>
     );
 }
 
 const styles = StyleSheet.create({
+    background: {
+        flex: 1,
+        justifyContent: 'center',
+    },
+    imageOverlay: {
+        ...StyleSheet.absoluteFillObject, // fills the entire background
+        backgroundColor: 'rgba(255,255,255,0.7)', // adjust opacity here
+        zIndex: 1,
+    },
     container: {
         flex: 1,
-        backgroundColor: '#fff',
+        backgroundColor: 'transparent',
+        zIndex: 2, // make sure content is above the overlay
     },
     flatList: {
         marginTop: 16,
