@@ -133,14 +133,14 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     imageOverlay: {
-        ...StyleSheet.absoluteFillObject, // fills the entire background
-        backgroundColor: 'rgba(255,255,255,0.7)', // adjust opacity here
+        ...StyleSheet.absoluteFillObject,
+        backgroundColor: 'rgba(255,255,255,0.7)',
         zIndex: 1,
     },
     container: {
         flex: 1,
         backgroundColor: 'transparent',
-        zIndex: 2, // make sure content is above the overlay
+        zIndex: 2,
     },
     flatList: {
         marginTop: 16,
