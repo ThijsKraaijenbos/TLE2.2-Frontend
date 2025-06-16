@@ -147,13 +147,15 @@ const styles = StyleSheet.create({
         backgroundColor: '#EAFCD2',
         borderWidth: 4,
         borderColor: '#A8D363',
-        borderRadius: 5
+        borderRadius: 5,
+        marginBottom: 15,
     },
     container: {
         flexDirection: 'row',
         flexWrap: 'wrap',
         justifyContent: 'space-evenly',
         padding: 5,
+        paddingBottom: 50
     },
     trophyBlock: {
         width: '95%',
