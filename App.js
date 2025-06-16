@@ -2,7 +2,7 @@ import {StyleSheet} from 'react-native';
 import React from 'react';
 import {createNativeStackNavigator} from "@react-navigation/native-stack";
 import {NavigationContainer} from "@react-navigation/native";
-import { ProfileProvider } from './Components/ProfileContext';
+import { ProfileProvider } from './Components/ScreenComponents/ProfileContext';
 import HomeScreen from "./Components/HomeScreen";
 import FruitDetails from "./Components/FruitDetails";
 import FruitList from "./Components/FruitList";

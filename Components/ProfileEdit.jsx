@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {View, TextInput, Button, StyleSheet, Pressable, Image, Text, ImageBackground} from 'react-native';
-import {useProfile} from './ProfileContext';
+import {useProfile} from './ScreenComponents/ProfileContext';
 import {Ionicons} from "@expo/vector-icons";
 
 export default function ProfileEdit({navigation}) {
