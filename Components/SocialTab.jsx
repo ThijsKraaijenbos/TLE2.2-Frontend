@@ -4,13 +4,14 @@ import ProfileIcon from "./ScreenComponents/ProfileIcon";
 import SettingsIcon from "./ScreenComponents/SettingsIcon";
 import {Ionicons} from "@expo/vector-icons";
 import UserList from '../Components/ScreenComponents/UserList.jsx';
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 
-export default function SocialTab ({navigation}) {
+export default function SocialTab({navigation}) {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [friendsCode, setFriendsCode] = useState()
-
+    const handleInvite = () => {
+    }
 
     useEffect(() => {
         const fetchFriends = async () => {
@@ -30,71 +31,128 @@ export default function SocialTab ({navigation}) {
     }, []);
 
     if (loading) {
-        return <ActivityIndicator size="large" style={styles.loader} />;
+        return <ActivityIndicator size="large" style={styles.loader}/>;
     }
 
     return (
-        <View style={{flex: 1}}>
-            <SettingsIcon navigation={navigation}/>
-            <ProfileIcon navigation={navigation}/>
-            <View>
-                <Ionicons name="people" size={32} style={styles.icon}/>
-                <View>
-                    <Text></Text>
+        <ImageBackground
+            source={require('../assets/fruitbackground.png')}
+            style={styles.background}
+            resizeMode="cover"
+        >
+            <View style={styles.overlay}/>
+
+            <SettingsIcon navigation={navigation} style={styles.settingsIcon}/>
+            <ProfileIcon navigation={navigation} style={styles.profileIcon}/>
+
+            <View style={styles.container}>
+                <Ionicons name="people" size={100} style={styles.icon}/>
+                <View style={styles.friendCodeSection}>
+                    <View style={styles.sectionTitleContainer}>
+                        <Text style={styles.sectionTitle}>Jouw Vriendcode</Text>
+                    </View>
+
+                    <Text style={styles.friendCode}>1768654351854</Text>
+                    <View style={styles.sectionTitleContainer}>
+                        <Text style={styles.sectionTitle}>Vriend uitnodigen</Text>
+                    </View>
+                    <View style={styles.inviteContainer}>
+                        <TextInput
+                            value={friendsCode}
+                            onChangeText={setFriendsCode}
+                            placeholder="#"
+                            style={styles.input}
+                            placeholderTextColor="#182700"
+                        />
+                        <Pressable onPress={handleInvite} style={styles.searchButton}>
+                            <Text style={styles.searchButtonText}>Zoeken</Text>
+                        </Pressable>
+                    </View>
                 </View>
-                <View>
-                    <View>
-                        <View>
-                            <Text>Jouw Vriendcode</Text>
-                            <Text>1768654351854</Text>
-                            <View>
-                                <Text>Vriend uitnodigen</Text>
-                                <View>
-                                    <TextInput
-                                        value={friendsCode}
-                                        onChangeText={setFriendsCode}
-                                        placeholder="#"
-                                        style={styles.input}
-                                    />
-                                    <Pressable onPress={() => handleInvite()}>
-                                        <Text>Zoeken</Text>
-                                    </Pressable>
-                                </View>
-                            </View>
-                        </View>
-                    </View>
-                    <View>
-                        <Text>Jouw Vrienden</Text>
-                        <UserList users={users} />
-                    </View>
+
+                <View style={styles.friendsListSection}>
+                    <Text style={styles.sectionTitle}>Jouw Vrienden</Text>
+                    <UserList users={users}/>
                 </View>
             </View>
 
-            <BottomNavigation navigation={navigation}/>
-        </View>
-    )
-};
+            <View style={styles.bottomNav}>
+                <BottomNavigation navigation={navigation}/>
+            </View>
+        </ImageBackground>
+    );
+}
+
 
 const styles = StyleSheet.create({
+    background: {
+        flex: 1,
+        position: 'relative',
+    },
+    overlay: {
+        ...StyleSheet.absoluteFillObject,
+        backgroundColor: 'rgba(255, 255, 255, 0.7)',
+        zIndex: 0,
+    },
+    settingsIcon: {
+        position: 'absolute',
+        top: 10,
+        left: 10,
+        zIndex: 1,
+    },
+    profileIcon: {
+        position: 'absolute',
+        top: 10,
+        right: 10,
+        zIndex: 1,
+    },
     container: {
+        flex: 1,
+        marginTop: 40,
+        padding: 20,
+        justifyContent: 'flex-start',
+        zIndex: 1,
+    },
+    bottomNav: {
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        zIndex: 3,
+    },
+    friendCodeSection: {
+        backgroundColor: 'rgba(24,39,0,0.25)',
+        borderRadius: 12,
         padding: 16,
-        flex: 1,
-        backgroundColor: '#fff',
+        marginBottom: 20,
     },
-    header: {
-        fontSize: 22,
+    sectionTitle: {
+        fontSize: 18,
         fontWeight: 'bold',
-        marginBottom: 12,
+        color: '#eafcd2',
     },
-    loader: {
-        flex: 1,
-        justifyContent: 'center',
+    sectionTitleContainer: {
+        backgroundColor: '#182700',
+        alignItems: "center",
+        borderColor: '#A8D363',
+        borderWidth: 3,
+        borderRadius: 10,
+        height: 40,
+        width: 170,
+        justifyContent: "center",
     },
-    icon: {
-        color: '#000929',
+    friendCode: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        color: '#ffffff',
     },
-
+    inviteContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 10,
+    },
     input: {
+        flex: 1,
         backgroundColor: '#EAFCD2',
         borderWidth: 3,
         borderRadius: 10,
@@ -102,8 +160,29 @@ const styles = StyleSheet.create({
         color: '#182700',
         height: 50,
         fontSize: 20,
-        paddingLeft: 10
+        paddingHorizontal: 10,
+    },
+    searchButton: {
+        backgroundColor: '#a8d363',
+        paddingHorizontal: 20,
+        paddingVertical: 10,
+        borderRadius: 10,
+    },
+    searchButtonText: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: '#182700',
+    },
+    friendsListSection: {
+        backgroundColor: 'rgba(168, 211, 99, 0.9)',
+        borderRadius: 12,
+        padding: 16,
+        flex: 1,
+    },
+    icon: {
+        color: '#000929',
+        alignSelf: 'center',
+        marginBottom: 10,
     },
 });
-
 
