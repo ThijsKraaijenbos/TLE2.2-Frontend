@@ -52,7 +52,7 @@ export default function SocialTab({navigation}) {
                         <Text style={styles.sectionTitle}>Jouw Vriendcode</Text>
                     </View>
 
-                    <Text style={styles.friendCode}>1768654351854</Text>
+                    <Text style={styles.friendCode}># 1768654351854</Text>
                     <View style={styles.sectionTitleContainer}>
                         <Text style={styles.sectionTitle}>Vriend uitnodigen</Text>
                     </View>
@@ -71,11 +71,12 @@ export default function SocialTab({navigation}) {
                 </View>
 
                 <View style={styles.friendsListSection}>
-                    <Text style={styles.sectionTitle}>Jouw Vrienden</Text>
+                    <View style={styles.sectionTitleContainer2}>
+                        <Text style={styles.sectionTitle}>Jouw Vrienden</Text>
+                    </View>
                     <UserList users={users}/>
                 </View>
             </View>
-
             <View style={styles.bottomNav}>
                 <BottomNavigation navigation={navigation}/>
             </View>
@@ -141,10 +142,28 @@ const styles = StyleSheet.create({
         width: 170,
         justifyContent: "center",
     },
+    sectionTitleContainer2: {
+        backgroundColor: '#182700',
+        alignItems: "center",
+        borderColor: '#A8D363',
+        borderWidth: 3,
+        borderRadius: 10,
+        height: 40,
+        width: 170,
+        justifyContent: "center",
+        alignSelf:"center",
+    },
     friendCode: {
         fontSize: 20,
         fontWeight: 'bold',
-        color: '#ffffff',
+        color: '#eafcd2',
+        backgroundColor: 'rgba(24,39,0,0.53)',
+        width: 175,
+        marginLeft: 5,
+        marginTop:4,
+        marginBottom: 4,
+        paddingLeft: 3,
+        borderRadius: 5,
     },
     inviteContainer: {
         flexDirection: 'row',
@@ -174,10 +193,12 @@ const styles = StyleSheet.create({
         color: '#182700',
     },
     friendsListSection: {
-        backgroundColor: 'rgba(168, 211, 99, 0.9)',
+        backgroundColor: 'rgb(24,39,0)',
         borderRadius: 12,
         padding: 16,
         flex: 1,
+        maxHeight:320,
+        marginTop:-10,
     },
     icon: {
         color: '#000929',
