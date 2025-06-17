@@ -26,7 +26,7 @@ export default function Register({navigation}){
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-
+                    'Authorization': 'Bearer g360GNGOWNvaZ3rNM4YayTHnsV5ntsxVAPn8otxmdb1d2ed8'
                 },
                 body: JSON.stringify({ name, email, password, role }),
             });
