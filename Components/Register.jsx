@@ -22,24 +22,25 @@ export default function Register({navigation}){
 
 
         try {
-            const response = await fetch('http://127.0.0.1:8000/api/register', {
+            const response = await fetch('http://145.24.223.94/api/register', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+
                 },
                 body: JSON.stringify({ name, email, password, role }),
             });
 
-            const data = await response.json();
-
+            const data = await response.text();
+            console.log("RESPONSE TEXT:", data);
             if (response.ok) {
                 Alert.alert('Gelukt', 'Registratie voltooid!');
                 navigation.navigate('Login');
             } else {
-                Alert.alert('Fout', data.message || 'Registratie mislukt.');
+                Alert.alert('Fout', data || 'Registratie mislukt.');
             }
         } catch (err) {
-            Alert.alert('Fout', 'Er is een netwerkfout opgetreden.');
+            Alert.alert('Fout', `Er is een netwerkfout opgetreden., ${err}`);
         }
 
     }
