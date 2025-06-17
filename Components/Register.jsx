@@ -1,5 +1,8 @@
 import {Pressable, Image, Text, TextInput, View, StyleSheet, Alert} from "react-native";
 import {useState} from "react";
+import Constants from 'expo-constants';
+
+const AUTH_TOKEN = Constants.expoConfig.extra;
 
 export default function Register({navigation}){
 
@@ -26,7 +29,7 @@ export default function Register({navigation}){
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': 'Bearer g360GNGOWNvaZ3rNM4YayTHnsV5ntsxVAPn8otxmdb1d2ed8'
+                    'Authorization': AUTH_TOKEN
                 },
                 body: JSON.stringify({ name, email, password, role }),
             });
