@@ -2,8 +2,7 @@ import {Pressable, Image, Text, TextInput, View, StyleSheet, Alert} from "react-
 import {useState} from "react";
 import Constants from 'expo-constants';
 
-const AUTH_TOKEN = Constants.expoConfig.extra;
-
+const { AUTH_TOKEN } = Constants.expoConfig.extra;
 export default function Register({navigation}){
 
     const [name, setName] = useState('');
@@ -24,6 +23,7 @@ export default function Register({navigation}){
         const role = "child"
 
 
+
         try {
             const response = await fetch('http://145.24.223.94/api/register', {
                 method: 'POST',
@@ -31,7 +31,7 @@ export default function Register({navigation}){
                     'Content-Type': 'application/json',
                     'Authorization': AUTH_TOKEN
                 },
-                body: JSON.stringify({ name, email, password, role }),
+                body: JSON.stringify({ name: name, email: email, password: password, role: role }),
             });
 
             const data = await response.text();
