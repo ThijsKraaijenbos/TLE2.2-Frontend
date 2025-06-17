@@ -25,8 +25,7 @@ const TIMESTAMP_KEY = 'last_updated_time';
 
 
 export default function HomeScreen({navigation}) {
-    const route = useRoute();
-    const { token } = route.params;
+
 
     const [streak, setStreak] = useState(0)
     const [daylyTask, setDaylyTask] = useState(false)
