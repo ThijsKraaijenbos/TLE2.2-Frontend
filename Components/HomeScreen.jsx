@@ -6,6 +6,7 @@ import {useEffect, useState} from "react";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Ionicons} from "@expo/vector-icons";
 import {SafeAreaView} from "react-native-safe-area-context";
+import {useRoute} from "@react-navigation/native";
 
 const fruitCombinaties = [
     "1 banaan 120g +\n 10 aardbeien 80g = 200g",
@@ -22,7 +23,11 @@ const fruitCombinaties = [
 const DATA_KEY = 'daily_data';
 const TIMESTAMP_KEY = 'last_updated_time';
 
+
 export default function HomeScreen({navigation}) {
+    const route = useRoute();
+    const { token } = route.params;
+
     const [streak, setStreak] = useState(0)
     const [daylyTask, setDaylyTask] = useState(false)
     const [userInfo, setUserInfo] = useState([])
