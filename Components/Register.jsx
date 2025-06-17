@@ -18,18 +18,16 @@ export default function Register({navigation}){
             Alert.alert('Wachtwoorden komen niet overeen', 'Typ het wachtwoord opnieuw.');
             return;
         }
+        const role = "child"
 
-        //Weghalen na het toevoegen van de juiste fetch vrolijke vrienden
-        navigation.navigate('Login')
-        //!!!
 
         try {
-            const response = await fetch('https://backend-url/dummydummy.com/api/register', {
+            const response = await fetch('http://127.0.0.1:8000/api/register', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ name, email, password }),
+                body: JSON.stringify({ name, email, password, role }),
             });
 
             const data = await response.json();
