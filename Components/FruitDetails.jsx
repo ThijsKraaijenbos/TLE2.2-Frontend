@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
     Text,
     View,
@@ -16,7 +16,29 @@ import BottomNavigation from "./ScreenComponents/BottomNavigation";
 
 export default function FruitDetails({ navigation }) {
     const [isLekker, setIsLekker] = useState(false);
+    const [Fruitdata, setFruitdata] = useState([])
 
+    const LoadFruits = async () => {
+        try {
+            const response = await fetch(`http://145.24.223.94/api/fruits/${id}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer g360GNGOWNvaZ3rNM4YayTHnsV5ntsxVAPn8otxmdb1d2ed8',
+                },
+            });
+
+            const data = await response.json();
+            if (response.ok) {
+                setFruitdata(data);
+                console.log('Fruit correct opgehaald');
+            } else {
+                Alert.alert('Fout', data.message || 'Fruit ophalen mislukt.');
+            }
+        } catch (err) {
+            Alert.alert('Fout', `Er is een netwerkfout opgetreden: ${err}`);
+        }
+    };
 
 
 
@@ -56,16 +78,16 @@ export default function FruitDetails({ navigation }) {
                 {/* Description */}
                 <View style={styles.descriptionBox}>
                     <Text style={styles.descriptionText}>
-                        De appel is een van de meest gegeten fruitsoorten ter wereld. Hij komt oorspronkelijk uit Centraal-Azië, waar de wilde appel (Malus sieversii) nog steeds in het wild groeit. Tegenwoordig zijn er duizenden appelrassen, variërend van zoet tot zuur, en van knapperig tot zacht.
+                        ${Fruitdata.description}
                     </Text>
                 </View>
 
                 {/* Details Section */}
                 <View style={styles.detailRow}>
                     <View style={styles.detailBox}>
-                        <Text style={styles.detailText}>prijs</Text>
-                        <Text style={styles.detailText}>locatie: overal</Text>
-                        <Text style={styles.detailText}>rating: geweldig!</Text>
+                        <Text style={styles.detailText}>${Fruitdata.price}</Text>
+                        <Text style={styles.detailText}>${Fruitdata.price}</Text>
+                        <Text style={styles.detailText}>${Fruitdata.price}</Text>
                     </View>
                     <Image
                         source={require('../assets/icon.png')}

@@ -1,38 +1,26 @@
-import React from 'react';
-import { View, Text, TextInput, StyleSheet, FlatList, Image } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import {
+    View,
+    Text,
+    TextInput,
+    StyleSheet,
+    FlatList,
+    Image,
+    Alert,
+    TouchableOpacity,
+    ImageBackground,
+} from 'react-native';
+import DropDownPicker from 'react-native-dropdown-picker';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import SettingsIcon from './ScreenComponents/SettingsIcon';
 import ProfileIcon from './ScreenComponents/ProfileIcon';
 import BottomNavigation from "./ScreenComponents/BottomNavigation";
 
-const fruitData = [
-    { name: 'Appel', image: require('../assets/fruitImages/S6pr7qTm-appelpitten-shutterstock-900-500.jpg'), checked: true, color: '#FD9A90' },
-    { name: 'Banaan', image: require('../assets/fruitImages/WKOF_artikel_Zijn_bananen_gezond_700x400-1.webp'), checked: true, color: '#A8D363' },
-    { name: 'Kiwi', image: require('../assets/fruitImages/duerfen-hunde-kiwi-essen-1200x675.jpg'), checked: true, color: '#A8D363' },
-    { name: 'Mango', image: require('../assets/fruitImages/0097_Welke-vitamine-zit-er-in-een-mango_.jpg'), checked: true, color: '#FD9A90' },
-    { name: 'Papaya', image: require('../assets/fruitImages/papaya-fruit.webp'), checked: false, color: '#FD9A90' },
-    { name: 'Pitaja', image: require('../assets/fruitImages/istock_44367732_large.jpg'), checked: true, color: '#A8D363' },
- //   { name: 'Ananas', image: require('../assets/fruitImages/Ananas_370x425.webp'), checked: false, color: '#FD9A90' },
-    { name: 'Peer', image: require('../assets/fruitImages/peer.jpg'), checked: true, color: '#A8D363' },
-];
-
-
-function borderColor(Hex){
-    let returnCollor = ""
-    if(Hex == '#A8D363'){
-        returnCollor = '#45A85B'
-    }
-    else if(Hex == '#FD9A90'){
-        returnCollor = '#D83F2E'
-    }
-    return returnCollor
-}
-
-
-
-
 export default function FruitList({navigation}) {
-
+    const [searchText, setSearchText] = useState('');
+    const [open, setOpen] = useState(false);
+    const [selectedFruit, setSelectedFruit] = useState(null);
+    const [dropdownItems, setDropdownItems] = useState([]);
     const [fruitdata, setFruitdata] = useState([]);
 
     useEffect(() => {
@@ -53,6 +41,7 @@ export default function FruitList({navigation}) {
             const data = await response.json();
             if (response.ok) {
                 setFruitdata(data);
+                setDropdownItems(data.map(item => ({ label: item.name, value: item.name })));
                 console.log('Fruit correct opgehaald');
             } else {
                 Alert.alert('Fout', data.message || 'Fruit ophalen mislukt.');
@@ -61,6 +50,41 @@ export default function FruitList({navigation}) {
             Alert.alert('Fout', `Er is een netwerkfout opgetreden: ${err}`);
         }
     };
+
+    const toggleFruitStatus = async (fruitName) => {
+        const fruit = fruitdata.find(f => f.name === fruitName);
+        if (!fruit) return;
+
+        const updatedLike = !fruit.like;
+
+        try {
+            const response = await fetch(`http://145.24.223.94/api/fruits/${fruit.id}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer g360GNGOWNvaZ3rNM4YayTHnsV5ntsxVAPn8otxmdb1d2ed8',
+                },
+                body: JSON.stringify({ like: updatedLike }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Update failed');
+            }
+
+            // Locally update the state after a successful update
+            setFruitdata(prev =>
+                prev.map(f =>
+                    f.name === fruitName
+                        ? { ...f, like: updatedLike }
+                        : f
+                )
+            );
+        } catch (error) {
+            Alert.alert('Fout', `Kon status niet bijwerken: ${error.message}`);
+        }
+    };
+
+
 
     function borderColor(like) {
         if (like === true) {
@@ -126,7 +150,9 @@ export default function FruitList({navigation}) {
             </View>
 
             <FlatList
-                data={fruitData}
+                data={fruitdata.filter(item =>
+                    item.name.toLowerCase().includes(searchText.toLowerCase())
+                )}
                 keyExtractor={(item) => item.name}
                 numColumns={2}
                 contentContainerStyle={styles.grid}
@@ -137,7 +163,7 @@ export default function FruitList({navigation}) {
                         style={[
                             styles.fruitItem,
                             {
-                                backgroundColor: item.like,
+                                backgroundColor: Backgroundcolor(item.like),
                                 borderColor: borderColor(item.like),
                                 borderWidth: 3,
                             }
