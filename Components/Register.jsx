@@ -29,23 +29,22 @@ export default function Register({navigation}){
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': AUTH_TOKEN
+                    'Authorization': 'Bearer g360GNGOWNvaZ3rNM4YayTHnsV5ntsxVAPn8otxmdb1d2ed8'
                 },
                 body: JSON.stringify({ name: name, email: email, password: password, role: role }),
             });
 
-            const data = await response.text();
+            const data = await response.json();
             console.log("RESPONSE TEXT:", data);
             if (response.ok) {
                 Alert.alert('Gelukt', 'Registratie voltooid!');
                 navigation.navigate('Login');
             } else {
-                Alert.alert('Fout', data || 'Registratie mislukt.');
+                Alert.alert('Fout', data.message || 'Registratie mislukt.');
             }
         } catch (err) {
             Alert.alert('Fout', `Er is een netwerkfout opgetreden., ${err}`);
         }
-
     }
 
     return (
