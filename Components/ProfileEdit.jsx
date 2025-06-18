@@ -1,22 +1,30 @@
-import React, {useState} from 'react';
-import {View, TextInput, Button, StyleSheet, Pressable, Image, Text, ImageBackground} from 'react-native';
-import {useProfile} from './ScreenComponents/ProfileContext';
-import {Ionicons} from "@expo/vector-icons";
+import React, {useEffect, useState} from 'react'
+import {View, TextInput, Button, StyleSheet, Pressable, Image, Text, ImageBackground} from 'react-native'
+import {useProfile} from './ScreenComponents/ProfileContext'
+import {Ionicons} from "@expo/vector-icons"
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import axios from 'axios'
+
 
 export default function ProfileEdit({navigation}) {
-    const {displayName, setDisplayName, profileImage, setProfileImage} = useProfile();
-    const [name, setName] = useState(displayName);
+    const { profileImage, setProfileImage, displayName, setDisplayName } = useProfile()
+    const [name, setName] = useState(displayName)
+    const [selectedImageId, setSelectedImageId] = useState(null)
+    const [tempImage, setTempImage] = useState(profileImage)
+
 
     const profileImages = [
-        require('../assets/fruitbackground.png'),
-        require('../assets/gray.jpg'),
-        require('../assets/man.jpg'),
-        require('../assets/banana.jpg'),
-        require('../assets/banana.jpg'),
-        require('../assets/banana.jpg'),
-        require('../assets/banana.jpg'),
-        require('../assets/banana.jpg'),
-    ];
+        {id: 1, src: require('../assets/gray.jpg')},
+        {id: 2, src: require('../assets/fruitbackground.png')},
+        {id: 3, src: require('../assets/man.jpg')},
+        {id: 4, src: require('../assets/banana.jpg')},
+    ]
+
+    useEffect(() => {
+        setTempImage(profileImage)
+        setName(displayName)
+        setSelectedImageId(null)
+    }, [profileImage, displayName])
 
     return (
         <ImageBackground
@@ -38,10 +46,10 @@ export default function ProfileEdit({navigation}) {
                     </View>
                 </View>
                 <View style={styles.profileContainer}>
-                    <Image source={profileImage} style={styles.profileImage}/>
+                    <Image source={tempImage} style={styles.profileImage}/>
                 </View>
 
-                <Text style={styles.name}>{displayName}</Text>
+                <Text style={styles.name}>{name}</Text>
 
                 <Text style={styles.label}>Pas je naam aan</Text>
                 <TextInput
@@ -54,22 +62,41 @@ export default function ProfileEdit({navigation}) {
                 <Text style={styles.label}>Kies een profielfoto</Text>
                 <View style={styles.imageSelector}>
                     {profileImages.map((img, index) => (
-                        <Pressable key={index} onPress={() => setProfileImage(img)}>
+                        <Pressable key={img.id} onPress={() => {
+                            setTempImage(img.src)
+                            setSelectedImageId(img.id)
+                        }}>
                             <Image
-                                source={img}
+                                source={img.src}
                                 style={[
                                     styles.profileOption,
-                                    profileImage === img && styles.selectedProfile
+                                    selectedImageId === img.id && styles.selectedProfile
                                 ]}
                             />
                         </Pressable>
                     ))}
                 </View>
 
-                <Pressable style={styles.saveButton} onPress={() => {
-                    setDisplayName(name);
-                    navigation.goBack();
-                }} >
+                <Pressable style={styles.saveButton} onPress={async () => {
+                    try {
+                        const token = await AsyncStorage.getItem('user_login_token')
+                        await axios.post('http://145.24.223.94/api/user', {
+                            name: name,
+                            profile_image_id: selectedImageId,
+                        }, {
+                            headers: {
+                                'X-user-login-token': token,
+                                'Authorization': 'Bearer g360GNGOWNvaZ3rNM4YayTHnsV5ntsxVAPn8otxmdb1d2ed8',
+                                'Content-Type': 'application/json',
+                            }
+                        })
+
+                        navigation.goBack()
+                    } catch (error) {
+                        console.error('Fout bij opslaan profiel:', error)
+                        Alert.alert('Fout', 'Profiel kon niet worden opgeslagen.')
+                    }
+                }}>
                     <Text style={styles.saveButtonText}>Opslaan</Text>
                 </Pressable>
 
@@ -162,4 +189,4 @@ const styles = StyleSheet.create({
         marginHorizontal: 10,
         color: '#000929'
     },
-});
+})
