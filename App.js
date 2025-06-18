@@ -2,6 +2,7 @@ import {StyleSheet} from 'react-native';
 import React from 'react';
 import {createNativeStackNavigator} from "@react-navigation/native-stack";
 import {NavigationContainer} from "@react-navigation/native";
+import { ProfileProvider } from './Components/ScreenComponents/ProfileContext';
 import HomeScreen from "./Components/HomeScreen";
 import FruitDetails from "./Components/FruitDetails";
 import FruitList from "./Components/FruitList";
@@ -18,21 +19,23 @@ const Stack = createNativeStackNavigator()
 export default function App() {
 
     return (
+        <ProfileProvider>
         <NavigationContainer>
             <Stack.Navigator>
                 <Stack.Screen name="Login" component={Login} options={{headerShown: false}}/>
-                <Stack.Screen name="Profile" component={Profile} options={{title: "Profile", headerTitleAlign: "center"}}/>
-                <Stack.Screen name="ProfileEdit" component={ProfileEdit} options={{title: "ProfileEdit", headerTitleAlign: "center"}}/>
-                <Stack.Screen name="ProgressList" component={ProgressList} options={{title: "ProgressList", headerTitleAlign: "center"}}/>
+                <Stack.Screen name="Profile" component={Profile} options={{headerShown: false}}/>
+                <Stack.Screen name="ProfileEdit" component={ProfileEdit} options={{headerShown: false}}/>
+                <Stack.Screen name="ProgressList" component={ProgressList} options={{headerShown: false}}/>
                 <Stack.Screen name="Register" component={Register} options={{headerShown: false}}/>
-                <Stack.Screen name="SocialTab" component={SocialTab} options={{title: "SocialTab", headerTitleAlign: "center"}}/>
-                <Stack.Screen name="TrophiesList" component={TrophiesList} options={{title: "TrophiesList", headerTitleAlign: "center"}}/>
-                <Stack.Screen name="Home" component={HomeScreen} options={{title: "Home", headerTitleAlign: "center"}}/>
-                <Stack.Screen name="Settings" component={Settings} options={{title: "Settings", headerTitleAlign: "center"}}/>
-                <Stack.Screen name="FruitList" component={FruitList} options={{title: "FruitList", headerTitleAlign: "center"}}/>
-                <Stack.Screen name="FruitDetails" component={FruitDetails} options={{title: "FruitDetails", headerTitleAlign: "center"}}/>
+                <Stack.Screen name="SocialTab" component={SocialTab} options={{headerShown: false}}/>
+                <Stack.Screen name="TrophiesList" component={TrophiesList} options={{headerShown: false}}/>
+                <Stack.Screen name="Home" component={HomeScreen} options={{headerShown: false}}/>
+                <Stack.Screen name="Settings" component={Settings} options={{headerShown: false}}/>
+                <Stack.Screen name="FruitList" component={FruitList} options={{headerShown: false}}/>
+                <Stack.Screen name="FruitDetails" component={FruitDetails} options={{headerShown: false}}/>
             </Stack.Navigator>
         </NavigationContainer>
+        </ProfileProvider>
     );
 }
 

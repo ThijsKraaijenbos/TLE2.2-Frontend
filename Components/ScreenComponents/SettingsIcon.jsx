@@ -1,18 +1,26 @@
-import {Pressable, StyleSheet, View} from "react-native";
-import {Ionicons} from "@expo/vector-icons";
+import { Pressable, StyleSheet } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-export default function SettingsIcon({navigation}) {
+export default function SettingsIcon({ navigation }) {
     return (
-        <View>
-            <Pressable onPress={()=> navigation.navigate('Settings')}>
-                <Ionicons name="options" size={32} color="black" style={styles.icon} />
+        <SafeAreaView style={styles.container}>
+            <Pressable onPress={() => navigation.navigate('Settings')}>
+                <Ionicons name="options" size={42} style={styles.icon} />
             </Pressable>
-        </View>
-    )
+        </SafeAreaView>
+    );
 }
+
 const styles = StyleSheet.create({
+    container: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        padding: 10,
+        zIndex: 10,
+    },
     icon: {
-        marginHorizontal: 10,
-        color: '#000929'
+        color: '#000929',
     },
 });
