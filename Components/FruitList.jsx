@@ -115,7 +115,7 @@ export default function FruitList({ navigation }) {
                         ]}
                     >
                         <Image source={item.image} style={styles.fruitImage} />
-                        {item.checked && <Text style={styles.checkmark}>✔️</Text>}
+                        {item.has_eaten_before && <Text style={styles.checkmark}>✔️</Text>}
                         <Text style={styles.fruitName}>{item.name}</Text>
                     </TouchableOpacity>
                 )}
