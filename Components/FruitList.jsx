@@ -1,13 +1,13 @@
 import React, {useEffect, useState} from 'react';
 import {View, Text, TextInput, StyleSheet, FlatList, Image, Alert} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import {SafeAreaView} from 'react-native-safe-area-context';
 import SettingsIcon from './ScreenComponents/SettingsIcon';
 import ProfileIcon from './ScreenComponents/ProfileIcon';
 import BottomNavigation from "./ScreenComponents/BottomNavigation";
 
 
+export default function FruitList({navigation}) {
 
-export default function FruitList({ navigation }) {
     const [fruitdata, setFruitdata] = useState([]);
 
     useEffect(() => {
@@ -37,19 +37,27 @@ export default function FruitList({ navigation }) {
         }
     };
 
-    const borderColor = (color) => {
-        if(color = )
-    };
+    function borderColor(like) {
+        if (like === true) {
+            return '#45A85B'
+        } else if (like === false) {
+            return '#D83F2E'
+        }
+    }
 
+    function Backgroundcolor(like) {
+        if (like === true) {
+            return '#A8D363'
+        } else if (like === false) {
+            return '#FD9A90'
+        }
+    }
 
-
-
-export default function FruitList({ navigation }) {
     return (
         <SafeAreaView style={styles.container}>
             {/* Top icons */}
-            <SettingsIcon navigation={navigation} style={styles.settingsIcon} />
-            <ProfileIcon navigation={navigation} style={styles.profileIcon} />
+            <SettingsIcon navigation={navigation} style={styles.settingsIcon}/>
+            <ProfileIcon navigation={navigation} style={styles.profileIcon}/>
 
             {/* Info header */}
             <View style={styles.headerContainer}>
@@ -59,7 +67,7 @@ export default function FruitList({ navigation }) {
 
             {/* Search bar */}
             <View style={styles.searchContainer}>
-                <TextInput style={styles.searchInput} placeholder="Zoek fruit..." />
+                <TextInput style={styles.searchInput} placeholder="Zoek fruit..."/>
                 <Text style={styles.searchIcon}>🔍</Text>
             </View>
 
@@ -69,16 +77,16 @@ export default function FruitList({ navigation }) {
                 keyExtractor={(item) => item.name}
                 numColumns={2}
                 contentContainerStyle={styles.grid}
-                renderItem={({ item }) => (
+                renderItem={({item}) => (
                     <View style={[
                         styles.fruitItem,
                         {
-                            backgroundColor: item.color,
-                            borderColor: borderColor(item.eaten),
+                            backgroundColor: Backgroundcolor(item.like),
+                            borderColor: borderColor(item.like),
                             borderWidth: 3
                         }
                     ]}>
-                        <Image source={item.image} style={styles.fruitImage} />
+                        <Image source={item.image} style={styles.fruitImage}/>
                         {item.checked && <Text style={styles.checkmark}>✔️</Text>}
                         <Text style={styles.fruitName}>{item.name}</Text>
                     </View>
