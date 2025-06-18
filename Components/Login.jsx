@@ -1,5 +1,5 @@
 import {Pressable, Image, Text, TextInput, View, StyleSheet, Alert} from "react-native";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const User_Token = 'user_login_token'
@@ -8,6 +8,20 @@ export default function Login({navigation}) {
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('')
+    useEffect(() => {
+        const testUserAuth = async () => {
+            try {
+                const userAuth = await AsyncStorage.getItem(User_Token)
+                console.log(userAuth)
+                if (userAuth && userAuth.trim() !== '') { //niet null en niet undifined
+                    navigation.navigate('Home');
+                }
+            } catch (e) {
+                console.error('Fout bij het ophalen van van userdata', e);
+            }
+        }
+        testUserAuth()
+    }, []);
     const HandleLogin = async () => {
         if (!email || !password) {
             Alert.alert(
@@ -46,7 +60,6 @@ export default function Login({navigation}) {
             Alert.alert('Fout', 'Er is iets misgegaan met de verbinding.')
         }
     }
-
     return (
         <View style={styles.screen}>
             <View style={styles.background}>
@@ -90,6 +103,7 @@ export default function Login({navigation}) {
             <Image style={styles.img} source={require('../assets/fruitbackground.png')}/>
         </View>
     )
+
 }
 
 const styles = StyleSheet.create({
