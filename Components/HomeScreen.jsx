@@ -61,7 +61,6 @@ export default function HomeScreen({navigation}) {
                 } else {
                     setDaylyTask(false);
                 }
-
             } catch (error) {
                 console.error('Fout bij laden streak data:', error);
             }
