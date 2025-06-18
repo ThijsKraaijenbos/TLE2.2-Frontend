@@ -1,5 +1,8 @@
 import {Pressable, Image, Text, TextInput, View, StyleSheet, Alert} from "react-native";
 import {useState} from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+const User_Token = 'user_login_token'
 
 export default function Login({navigation}) {
 
@@ -16,15 +19,13 @@ export default function Login({navigation}) {
             )
             return
         }
-        // DIT WEGHALEN NA FIXEN FETCH HIERONDER
-        navigation.navigate('Home')
-        //!!!
 
         try {
-            const response = await fetch('https://jouw-backend-url.com/api/login', {
+            const response = await fetch('http://145.24.223.94/api/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Authorization': 'Bearer g360GNGOWNvaZ3rNM4YayTHnsV5ntsxVAPn8otxmdb1d2ed8'
                 },
                 body: JSON.stringify({
                     email: email,
@@ -33,8 +34,9 @@ export default function Login({navigation}) {
             });
 
             const data = await response.json()
-
             if (response.ok) {
+                const token = data['user-login-token']
+                await AsyncStorage.setItem(User_Token, token)
                 navigation.navigate('Home')
             } else {
                 Alert.alert('Login mislukt', data.message || 'Onjuiste inloggegevens.')

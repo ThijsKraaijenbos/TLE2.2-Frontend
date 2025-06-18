@@ -1,6 +1,8 @@
 import {Pressable, Image, Text, TextInput, View, StyleSheet, Alert} from "react-native";
 import {useState} from "react";
+import Constants from 'expo-constants';
 
+const { AUTH_TOKEN } = Constants.expoConfig.extra;
 export default function Register({navigation}){
 
     const [name, setName] = useState('');
@@ -18,22 +20,22 @@ export default function Register({navigation}){
             Alert.alert('Wachtwoorden komen niet overeen', 'Typ het wachtwoord opnieuw.');
             return;
         }
+        const role = "child"
 
-        //Weghalen na het toevoegen van de juiste fetch vrolijke vrienden
-        navigation.navigate('Login')
-        //!!!
+
 
         try {
-            const response = await fetch('https://backend-url/dummydummy.com/api/register', {
+            const response = await fetch('http://145.24.223.94/api/register', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Authorization': 'Bearer g360GNGOWNvaZ3rNM4YayTHnsV5ntsxVAPn8otxmdb1d2ed8'
                 },
-                body: JSON.stringify({ name, email, password }),
+                body: JSON.stringify({ name: name, email: email, password: password, role: role }),
             });
 
             const data = await response.json();
-
+            console.log("RESPONSE TEXT:", data);
             if (response.ok) {
                 Alert.alert('Gelukt', 'Registratie voltooid!');
                 navigation.navigate('Login');
@@ -41,9 +43,8 @@ export default function Register({navigation}){
                 Alert.alert('Fout', data.message || 'Registratie mislukt.');
             }
         } catch (err) {
-            Alert.alert('Fout', 'Er is een netwerkfout opgetreden.');
+            Alert.alert('Fout', `Er is een netwerkfout opgetreden., ${err}`);
         }
-
     }
 
     return (
