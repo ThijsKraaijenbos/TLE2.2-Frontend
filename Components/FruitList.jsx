@@ -1,32 +1,45 @@
-import React from 'react';
-import { View, Text, TextInput, StyleSheet, FlatList, Image } from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {View, Text, TextInput, StyleSheet, FlatList, Image, Alert} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import SettingsIcon from './ScreenComponents/SettingsIcon';
 import ProfileIcon from './ScreenComponents/ProfileIcon';
 import BottomNavigation from "./ScreenComponents/BottomNavigation";
 
-const fruitData = [
-    { name: 'Appel', image: require('../assets/fruitImages/S6pr7qTm-appelpitten-shutterstock-900-500.jpg'), checked: true, color: '#FD9A90' },
-    { name: 'Banaan', image: require('../assets/fruitImages/WKOF_artikel_Zijn_bananen_gezond_700x400-1.webp'), checked: true, color: '#A8D363' },
-    { name: 'Kiwi', image: require('../assets/fruitImages/duerfen-hunde-kiwi-essen-1200x675.jpg'), checked: true, color: '#A8D363' },
-    { name: 'Mango', image: require('../assets/fruitImages/0097_Welke-vitamine-zit-er-in-een-mango_.jpg'), checked: true, color: '#FD9A90' },
-    { name: 'Papaya', image: require('../assets/fruitImages/papaya-fruit.webp'), checked: false, color: '#FD9A90' },
-    { name: 'Pitaja', image: require('../assets/fruitImages/istock_44367732_large.jpg'), checked: true, color: '#A8D363' },
- //   { name: 'Ananas', image: require('../assets/fruitImages/Ananas_370x425.webp'), checked: false, color: '#FD9A90' },
-    { name: 'Peer', image: require('../assets/fruitImages/peer.jpg'), checked: true, color: '#A8D363' },
-];
 
 
-function borderColor(Hex){
-    let returnCollor = ""
-    if(Hex == '#A8D363'){
-        returnCollor = '#45A85B'
-    }
-    else if(Hex == '#FD9A90'){
-        returnCollor = '#D83F2E'
-    }
-    return returnCollor
-}
+export default function FruitList({ navigation }) {
+    const [fruitdata, setFruitdata] = useState([]);
+
+    useEffect(() => {
+        LoadFruits();
+    }, []);
+
+    const LoadFruits = async () => {
+        try {
+            const response = await fetch('http://145.24.223.94/api/fruits', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization':
+                        'Bearer g360GNGOWNvaZ3rNM4YayTHnsV5ntsxVAPn8otxmdb1d2ed8',
+                },
+            });
+
+            const data = await response.json();
+            if (response.ok) {
+                setFruitdata(data);
+                console.log('Fruit correct opgehaald');
+            } else {
+                Alert.alert('Fout', data.message || 'Fruit ophalen mislukt.');
+            }
+        } catch (err) {
+            Alert.alert('Fout', `Er is een netwerkfout opgetreden: ${err}`);
+        }
+    };
+
+    const borderColor = (color) => {
+        if(color = )
+    };
 
 
 
@@ -52,7 +65,7 @@ export default function FruitList({ navigation }) {
 
             {/* Fruit list */}
             <FlatList
-                data={fruitData}
+                data={fruitdata}
                 keyExtractor={(item) => item.name}
                 numColumns={2}
                 contentContainerStyle={styles.grid}
@@ -61,7 +74,7 @@ export default function FruitList({ navigation }) {
                         styles.fruitItem,
                         {
                             backgroundColor: item.color,
-                            borderColor: borderColor(item.color),
+                            borderColor: borderColor(item.eaten),
                             borderWidth: 3
                         }
                     ]}>
@@ -70,12 +83,16 @@ export default function FruitList({ navigation }) {
                         <Text style={styles.fruitName}>{item.name}</Text>
                     </View>
                 )}
-
             />
             <BottomNavigation navigation={navigation}/>
         </SafeAreaView>
     );
 }
+
+useEffect(() => {
+    LoadFruits();
+}, []);
+
 
 const styles = StyleSheet.create({
     container: {
