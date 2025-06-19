@@ -2,11 +2,38 @@ import {Pressable, StyleSheet, Text, View, ImageBackground, Image} from "react-n
 import {Ionicons} from "@expo/vector-icons"
 import {LinearGradient} from 'expo-linear-gradient'
 import {useProfile} from './ScreenComponents/ProfileContext'
+import {useEffect, useState} from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios from "axios";
 
 
 export default function ProgressList({navigation}) {
 
-    const {profileImage, displayName} = useProfile();
+    const [streak, setStreak] = useState('')
+
+    useEffect(() => {
+        async function loadProfile() {
+            try {
+                const token = await AsyncStorage.getItem('user_login_token')
+                console.log('TOKEN:', token)
+                const response = await axios.get('http://145.24.223.94/api/user', {
+                    headers: {
+                        'X-user-login-token': token,
+                        'X-with': 'streak',
+                        'Authorization': 'Bearer g360GNGOWNvaZ3rNM4YayTHnsV5ntsxVAPn8otxmdb1d2ed8',
+                    },
+                })
+
+                const userData = response.data.userData
+                setStreak(userData.streaks.longest_streak)
+
+            } catch (error) {
+                console.error('Fout bij ophalen profiel:', error)
+            }
+        }
+
+        loadProfile()
+    }, [])
 
     return (
         <ImageBackground
@@ -75,7 +102,7 @@ export default function ProgressList({navigation}) {
                             <Text style={styles.title}>Streak</Text>
                             <Text style={styles.title2}>record</Text>
                         </View>
-                        <Text style={styles.title3}>18 Dagen</Text>
+                        <Text style={styles.title3}>{streak} Dagen</Text>
                     </LinearGradient>
                 </View>
             </View>
