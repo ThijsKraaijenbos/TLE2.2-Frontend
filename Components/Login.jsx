@@ -5,7 +5,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 const User_Token = 'user_login_token'
 
 export default function Login({navigation}) {
-
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('')
     useEffect(() => {
