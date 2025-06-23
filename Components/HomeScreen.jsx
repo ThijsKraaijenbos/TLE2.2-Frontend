@@ -27,7 +27,7 @@ const Daily_Task = 'daily_task_completed'
 
 export default function HomeScreen({navigation}) {
     const [streak, setStreak] = useState(0)
-    const [daylyTask, setDaylyTask] = useState(false)
+    const [dailyTask, setDailyTask] = useState(false)
     const [suggestion, setSuggestion] = useState('')
     const [bgColor, setBgColor] = useState('rgba(168, 211, 99, 0.8)');
     const [streakDate, setStreakDate] = useState('')
@@ -73,13 +73,13 @@ export default function HomeScreen({navigation}) {
                     const now = new Date();
                     const formattedDate = `${String(now.getDate()).padStart(2, '0')}-${String(now.getMonth() + 1).padStart(2, '0')}-${now.getFullYear()}`;
                     if (lastCompleted === formattedDate) {
-                        setDaylyTask(true);
+                        setDailyTask(true);
                     } else {
-                        setDaylyTask(false);
+                        setDailyTask(false);
                     }
                 } else {
                     setStreak(0)
-                    setDaylyTask(false)
+                    setDailyTask(false)
                 }
 
             } else {
@@ -161,9 +161,9 @@ export default function HomeScreen({navigation}) {
             const data = await response.json();
             if (response.ok) {
                 await AsyncStorage.setItem(Daily_Task, JSON.stringify(true));
-                setDaylyTask(true);
-                if (!daylyTask) {
-                    console.log(daylyTask)
+                setDailyTask(true);
+                if (!dailyTask) {
+                    console.log(dailyTask)
                     navigation.navigate('FruitList');
                 }
             } else {
@@ -177,8 +177,8 @@ export default function HomeScreen({navigation}) {
     }
 
     const handleYesPressed = () => {
-        if (daylyTask === false) {
-            setDaylyTask(true);
+        if (dailyTask === false) {
+            setDailyTask(true);
             updateStreak()
         } else {
             alert("Ho even, Probeer jij vals te spelen?\nJe mag maar 1 keer per dag op Ja drukken.");
@@ -186,7 +186,7 @@ export default function HomeScreen({navigation}) {
     };
 
     const handleNeePressed = () => {
-        if (daylyTask === true) {
+        if (dailyTask === true) {
             alert("jij hebt vandaag al goed je fruit op heb je ingevuld!");
         } else {
             setBgColor('#fd9a90');
@@ -216,9 +216,9 @@ export default function HomeScreen({navigation}) {
             </View>
             <View style={styles.buttonsContainer}>
                 <Pressable
-                    style={[styles.buttonYes, daylyTask && {opacity: 0.5}]}
+                    style={[styles.buttonYes, dailyTask && {opacity: 0.5}]}
                     onPress={handleYesPressed}
-                    disabled={daylyTask}
+                    disabled={dailyTask}
                 >
                     <Text style={styles.buttonText}>JA!</Text>
                 </Pressable>
