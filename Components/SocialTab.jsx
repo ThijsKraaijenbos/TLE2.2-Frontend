@@ -56,7 +56,6 @@ export default function SocialTab({navigation}) {
             setLoading(false);
         }
     };
-
     useEffect(() => {
         getUserToken()
     }, []);
