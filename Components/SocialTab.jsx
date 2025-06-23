@@ -6,7 +6,6 @@ import {Ionicons} from "@expo/vector-icons";
 import UserList from '../Components/ScreenComponents/UserList.jsx';
 import React, {useEffect, useState} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {get} from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 
 const User_Token = 'user_login_token'
 
@@ -65,7 +64,32 @@ export default function SocialTab({navigation}) {
     if (loading) {
         return <ActivityIndicator size="large" style={styles.loader}/>;
     }
-    const handleInvite = () => {
+
+    const handleInvite = async () => {
+        try {
+            const response = await fetch('http://145.24.223.94/api/friends',
+                {
+                    method: "POST",
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer g360GNGOWNvaZ3rNM4YayTHnsV5ntsxVAPn8otxmdb1d2ed8',
+                        'X-user-login-token': userAuth,
+                    },
+                    body: JSON.stringify({
+                            email: friendsMail.trim()
+                        }
+                    )
+                }
+            )
+            if (response.ok && response.status !== 200){
+                await fetchFriends(userAuth)
+            } else {
+                alert("Jullie zijn al vrienden")
+            }
+        } catch (e) {
+            alert("Er komt niets terug"+e)
+        }
     }
     return (
         <ImageBackground
@@ -88,7 +112,7 @@ export default function SocialTab({navigation}) {
                         <TextInput
                             value={friendsMail}
                             onChangeText={setFriendsMail}
-                            placeholder="#"
+                            placeholder="email"
                             style={styles.input}
                             placeholderTextColor="#182700"
                         />
@@ -110,6 +134,7 @@ export default function SocialTab({navigation}) {
             </View>
         </ImageBackground>
     );
+
 }
 
 
@@ -211,9 +236,16 @@ const styles = StyleSheet.create({
     },
     searchButton: {
         backgroundColor: '#a8d363',
-        paddingHorizontal: 20,
-        paddingVertical: 10,
+        paddingHorizontal: 24,
+        paddingVertical: 12,
         borderRadius: 10,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.3,
+        shadowRadius: 3,
+        elevation: 4,
+        borderWidth: 2,
+        borderColor: '#182700',
     },
     searchButtonText: {
         fontSize: 16,
@@ -225,7 +257,8 @@ const styles = StyleSheet.create({
         borderRadius: 12,
         padding: 16,
         flex: 1,
-        maxHeight: 320,
+        minHeight: 390,
+        maxHeight: 390,
         marginTop: -10,
     },
     icon: {

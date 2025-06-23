@@ -24,8 +24,8 @@ const styles = StyleSheet.create({
         backgroundColor: '#EAFCD2',
         marginTop:5,
         borderRadius: 8,
-        minHeight:244,
-        maxHeight:244,
+        minHeight:310,
+        maxHeight:310,
     },
     emptyText: {
         textAlign: 'center',
