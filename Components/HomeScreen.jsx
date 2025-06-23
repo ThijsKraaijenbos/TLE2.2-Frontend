@@ -81,21 +81,6 @@ export default function HomeScreen({navigation}) {
                     setStreak(0)
                     setDaylyTask(false)
                 }
-            // if (response.ok) {
-            //     const userData = data.userData || {}
-            //     console.log(userData)
-            //     const streaks = userData.streak || {}
-            //     const currentStreak = streaks.current_streak
-            //     const lastCompleted = streaks?.last_completed_date
-            //
-            //     // Check: bestaan currentStreak en lastCompleted?
-            //     if (currentStreak != null && lastCompleted) {
-            //         await setStreak(currentStreak)
-            //         await setStreakDate(lastCompleted)
-            //         await loadStreakData();
-            //     } else {
-            //         setStreak(0)
-            //     }
 
             } else {
                 Alert.alert('Fout bij ophalen', data.message || 'Gebruikersinformatie kon niet worden geladen.')
@@ -105,27 +90,6 @@ export default function HomeScreen({navigation}) {
             Alert.alert('Verbindingsfout', 'Er is een probleem opgetreden tijdens het ophalen van gegevens.')
         }
     }
-
-    const loadStreakData = async () => {
-        try {
-            const now = new Date()
-            const formattedDate = `${String(now.getDate()).padStart(2, '0')}-${String(now.getMonth() + 1).padStart(2, '0')}-${now.getFullYear()}`;
-            if (streakDate !== '') {
-                const isDifferentDay =
-                    streakDate !== formattedDate
-
-                if (isDifferentDay) {
-                    setDaylyTask(false);
-                } else {
-                    setDaylyTask(true);
-                }
-            } else {
-                setDaylyTask(false);
-            }
-        } catch (error) {
-            console.error('Fout bij laden streak data:', error);
-        }
-    };
 
     const checkAndUpdateInfo = async () => {
         try {
@@ -168,7 +132,6 @@ export default function HomeScreen({navigation}) {
         useCallback(() => {
             getUserToken();
             checkAndUpdateInfo();
-            loadStreakData();
         }, [])
     );
 
