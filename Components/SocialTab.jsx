@@ -11,17 +11,18 @@ const User_Token = 'user_login_token'
 
 
 export default function SocialTab({navigation}) {
-    const [users, setUsers] = useState([]);
+    const [friends, setFriends] = useState([]);
     const [loading, setLoading] = useState(true);
     const [userAuth, setUserAuth] = useState('');
     const [friendsMail, setFriendsMail] = useState('')
-
+    const [userData, setUserData] = useState([])
 
     const getUserToken = async () => {
         try {
             const userAuthToken = await AsyncStorage.getItem(User_Token)
             if (userAuthToken) {
                 setUserAuth(userAuthToken)
+                fetchUser(userAuthToken)
                 fetchFriends(userAuthToken)
             } else {
                 console.log("Er is geen userdata")
@@ -30,6 +31,28 @@ export default function SocialTab({navigation}) {
             console.log("Er gaat iets fout met het ophalen van de gebruikersinformatie", e)
         }
 
+    }
+    const fetchUser = async (token) => {
+        try {
+            const response = await fetch('http://145.24.223.94/api/user',
+                {
+                    method: "GET",
+                    headers: {
+                        'Accept': 'application/json',
+                        'Authorization': 'Bearer g360GNGOWNvaZ3rNM4YayTHnsV5ntsxVAPn8otxmdb1d2ed8',
+                        'X-user-login-token': token,
+                        'X-with ': "streak"
+                    }
+                }
+            )
+            const data = response.json()
+            console.log(data)
+            if (response.ok) {
+                setUserData(data)
+            }
+        } catch (e){
+            alert("Er gaat iets fout met het ophalen vand de gebruiker" + e)
+        }
     }
     const fetchFriends = async (token) => {
         try {
@@ -46,7 +69,7 @@ export default function SocialTab({navigation}) {
             const data = await response.json();
             console.log(data)
             if (response.ok) {
-                setUsers(data?.friends)
+                setFriends(data?.friends)
             } else {
                 alert("er gaat iets niet goed met het verwerken van jouw vrienden")
             }
@@ -68,7 +91,7 @@ export default function SocialTab({navigation}) {
         const email = friendsMail.trim().toLowerCase(); // Normaliseer hoofdletters
 
         // Stap 1: check of deze email al in je vriendenlijst zit
-        const alreadyFriend = users.some(user => user.email?.toLowerCase() === email);
+        const alreadyFriend = friends.some(friend => friend.email?.toLowerCase() === email);
 
         if (alreadyFriend) {
             alert("Jullie zijn al vrienden");
@@ -85,7 +108,7 @@ export default function SocialTab({navigation}) {
                     'Authorization': 'Bearer g360GNGOWNvaZ3rNM4YayTHnsV5ntsxVAPn8otxmdb1d2ed8',
                     'X-user-login-token': userAuth,
                 },
-                body: JSON.stringify({ email: friendsMail.trim() })
+                body: JSON.stringify({email: friendsMail.trim()})
             });
 
             const data = await response.json();
@@ -136,7 +159,7 @@ export default function SocialTab({navigation}) {
                     <View style={styles.sectionTitleContainer2}>
                         <Text style={styles.sectionTitle}>Jouw Vrienden</Text>
                     </View>
-                    <UserList users={users}/>
+                    <UserList friends={friends}/>
                 </View>
             </View>
             <View style={styles.bottomNav}>
@@ -250,7 +273,7 @@ const styles = StyleSheet.create({
         paddingVertical: 12,
         borderRadius: 10,
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
+        shadowOffset: {width: 0, height: 2},
         shadowOpacity: 0.3,
         shadowRadius: 3,
         elevation: 4,
