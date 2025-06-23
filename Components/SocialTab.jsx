@@ -66,31 +66,42 @@ export default function SocialTab({navigation}) {
     }
 
     const handleInvite = async () => {
+        const email = friendsMail.trim().toLowerCase(); // Normaliseer hoofdletters
+
+        // Stap 1: check of deze email al in je vriendenlijst zit
+        const alreadyFriend = users.some(user => user.email?.toLowerCase() === email);
+
+        if (alreadyFriend) {
+            alert("Jullie zijn al vrienden");
+            return;
+        }
+
+        // Stap 2: als niet, probeer uitnodiging te versturen
         try {
-            const response = await fetch('http://145.24.223.94/api/friends',
-                {
-                    method: "POST",
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json',
-                        'Authorization': 'Bearer g360GNGOWNvaZ3rNM4YayTHnsV5ntsxVAPn8otxmdb1d2ed8',
-                        'X-user-login-token': userAuth,
-                    },
-                    body: JSON.stringify({
-                            email: friendsMail.trim()
-                        }
-                    )
-                }
-            )
-            if (response.ok && response.status !== 200){
-                await fetchFriends(userAuth)
+            const response = await fetch('http://145.24.223.94/api/friends', {
+                method: "POST",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer g360GNGOWNvaZ3rNM4YayTHnsV5ntsxVAPn8otxmdb1d2ed8',
+                    'X-user-login-token': userAuth,
+                },
+                body: JSON.stringify({ email: friendsMail.trim() })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                await fetchFriends(userAuth); // Herlaad de vriendenlijst
+                setFriendsMail(''); // Wis het veld
             } else {
-                alert("Jullie zijn al vrienden")
+                alert(data?.message || "Er ging iets mis");
             }
         } catch (e) {
-            alert("Er komt niets terug"+e)
+            alert("Er komt niets terug: " + e.message);
         }
-    }
+    };
+
     return (
         <ImageBackground
             source={require('../assets/fruitbackground.png')}

@@ -3,7 +3,7 @@ import { FlatList, Text, StyleSheet } from 'react-native';
 import UserItem from './UserItem';
 
 const UserList = ({ users }) => {
-    const sortedUsers = [...users].sort((a, b) => b.streak - a.streak);
+    const sortedUsers = [...users].sort((a, b) => b.streak.current_streak - a.streak.current_streak);
 
     return (
         <FlatList
