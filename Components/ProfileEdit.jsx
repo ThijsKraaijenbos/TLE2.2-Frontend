@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react'
-import {View, TextInput, Button, StyleSheet, Pressable, Image, Text, ImageBackground} from 'react-native'
+import {View, TextInput, Button, StyleSheet, Pressable, Image, Text, ImageBackground, Alert} from 'react-native'
 import {useProfile} from './ScreenComponents/ProfileContext'
 import {Ionicons} from "@expo/vector-icons"
 import AsyncStorage from '@react-native-async-storage/async-storage'
@@ -80,7 +80,7 @@ export default function ProfileEdit({navigation}) {
                 <Pressable style={styles.saveButton} onPress={async () => {
                     try {
                         const token = await AsyncStorage.getItem('user_login_token')
-                        await axios.post('http://145.24.223.94/api/user', {
+                        await axios.put('http://145.24.223.94/api/user', {
                             name: name,
                             profile_image_id: selectedImageId,
                         }, {
