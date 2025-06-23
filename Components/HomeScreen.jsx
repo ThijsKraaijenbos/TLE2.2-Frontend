@@ -2,11 +2,11 @@ import {Alert, ImageBackground, Pressable, StyleSheet, Text, View} from "react-n
 import BottomNavigation from "./ScreenComponents/BottomNavigation";
 import ProfileIcon from "./ScreenComponents/ProfileIcon";
 import SettingsIcon from "./ScreenComponents/SettingsIcon";
-import {useEffect, useState} from "react";
+import {useCallback, useEffect, useState} from "react";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Ionicons} from "@expo/vector-icons";
 import {SafeAreaView} from "react-native-safe-area-context";
-import {useRoute} from "@react-navigation/native";
+import {useFocusEffect, useRoute} from "@react-navigation/native";
 
 const fruitCombinaties = [
     "1 banaan 120g +\n 10 aardbeien 80g = 200g",
@@ -23,7 +23,7 @@ const fruitCombinaties = [
 const DATA_KEY = 'daily_data';
 const TIMESTAMP_KEY = 'last_updated_time';
 const User_Token = 'user_login_token'
-
+const Daily_Task = 'daily_task_completed'
 
 export default function HomeScreen({navigation}) {
     const [streak, setStreak] = useState(0)
@@ -60,27 +60,18 @@ export default function HomeScreen({navigation}) {
             })
 
             const data = await response.json()
-            console.log(data)
             if (response.ok) {
                 const userData = data.userData || {}
-
-                const streaks = userData.streaks || {}
-                console.log(streaks)
-                console.log("--------------")
+                console.log(userData)
+                const streaks = userData.streak || {}
                 const currentStreak = streaks.current_streak
-                console.log(currentStreak)
-                console.log("--------------")
                 const lastCompleted = streaks?.last_completed_date
-
-                // Profielafbeelding ophalen als je die nodig hebt
-                // const profileImage = userData.profile_image_id?.file_path
-                // console.log('Profielafbeelding:', profileImage)
 
                 // Check: bestaan currentStreak en lastCompleted?
                 if (currentStreak != null && lastCompleted) {
                     await setStreak(currentStreak)
                     await setStreakDate(lastCompleted)
-                    loadStreakData();
+                    await loadStreakData();
                 } else {
                     setStreak(0)
                 }
@@ -96,14 +87,11 @@ export default function HomeScreen({navigation}) {
 
     const loadStreakData = async () => {
         try {
-            const now = new Date();
+            const now = new Date()
+            const formattedDate = `${String(now.getDate()).padStart(2, '0')}-${String(now.getMonth() + 1).padStart(2, '0')}-${now.getFullYear()}`;
             if (streakDate !== '') {
-                const oldDate = new Date(streakDate);
-
                 const isDifferentDay =
-                    oldDate.getFullYear() !== now.getFullYear() ||
-                    oldDate.getMonth() !== now.getMonth() ||
-                    oldDate.getDate() !== now.getDate();
+                    streakDate !== formattedDate
 
                 if (isDifferentDay) {
                     setDaylyTask(false);
@@ -155,7 +143,13 @@ export default function HomeScreen({navigation}) {
         getUserToken()
         checkAndUpdateInfo();
     }, [])
-
+    useFocusEffect(
+        useCallback(() => {
+            getUserToken();
+            checkAndUpdateInfo();
+            loadStreakData();
+        }, [])
+    );
 
     const getRandomItem = () => {
         const index = Math.floor(Math.random() * fruitCombinaties.length);
@@ -163,37 +157,45 @@ export default function HomeScreen({navigation}) {
     };
 
 
-    // const updateStreak = async () => {
-    //     try {
-    //         const response = await fetch('http://145.24.223.94/api/user', {
-    //             method: 'POST',
-    //             headers: {
-    //                 'Content-Type': 'application/json',
-    //                 'Authorization': 'Bearer g360GNGOWNvaZ3rNM4YayTHnsV5ntsxVAPn8otxmdb1d2ed8',
-    //                 'X-user-login-token': userAuth,
-    //             }
-    //         })
-    //         const data = response.json()
-    //         if (response.ok) {
-    //             setDaylyTask(true)
-    //             console.log(data.message)
-    //             navigation.navigate('FruitList')
-    //         } else {
-    //             alert("Opslaan van de streak is mislukt" + data.message)
-    //         }
-    //
-    //     } catch (e) {
-    //         console.log("Er gaat iets fout met het updaten van de streak")
-    //     }
-    // }
+    const updateStreak = async () => {
+        try {
+            console.log(userAuth)
+            const today = new Date();
+            const formattedDate = `${String(today.getDate()).padStart(2, '0')}-${String(today.getMonth() + 1).padStart(2, '0')}-${today.getFullYear()}`;
+            console.log(formattedDate)
+            const response = await fetch('http://145.24.223.94/api/updateStreak', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer g360GNGOWNvaZ3rNM4YayTHnsV5ntsxVAPn8otxmdb1d2ed8',
+                    'X-user-login-token': userAuth,
+                },
+                body: JSON.stringify({
+                    date: formattedDate
+                })
+            })
+            const data = await response.json();
+            if (response.ok) {
+                await AsyncStorage.setItem(Daily_Task, JSON.stringify(true));
+                setDaylyTask(true);
+                if (!daylyTask) {
+                    console.log(daylyTask)
+                    navigation.navigate('FruitList');
+                }
+            } else {
+                console.log("foutresponse" + data)
+                alert("Opslaan van de streak is mislukt: " + data);
+            }
 
-    const handleYesPressed = async () => {
+        } catch (e) {
+            console.log("Er gaat iets fout met het updaten van de streak", e);
+        }
+    }
+
+    const handleYesPressed = () => {
         if (daylyTask === false) {
-            const newStreak = streak + 1;
-            setStreak(newStreak);
-            setDaylyTask(true)
-            // await updateStreak()
-
+            setDaylyTask(true);
+            updateStreak()
         } else {
             alert("Ho even, Probeer jij vals te spelen?\nJe mag maar 1 keer per dag op Ja drukken.");
         }
@@ -229,7 +231,11 @@ export default function HomeScreen({navigation}) {
                 <Text style={styles.questionText}>fruit gegeten?</Text>
             </View>
             <View style={styles.buttonsContainer}>
-                <Pressable style={styles.buttonYes} onPress={handleYesPressed}>
+                <Pressable
+                    style={[styles.buttonYes, daylyTask && {opacity: 0.5}]}
+                    onPress={handleYesPressed}
+                    disabled={daylyTask}
+                >
                     <Text style={styles.buttonText}>JA!</Text>
                 </Pressable>
                 <Pressable style={styles.buttonNo} onPress={handleNeePressed}>
