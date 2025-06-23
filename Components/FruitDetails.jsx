@@ -6,7 +6,7 @@ import {
     StyleSheet,
     ImageBackground,
     Switch,
-    TouchableOpacity
+    TouchableOpacity, Alert
 } from 'react-native';
 import SettingsIcon from './ScreenComponents/SettingsIcon';
 import ProfileIcon from './ScreenComponents/ProfileIcon';
@@ -14,13 +14,14 @@ import BottomNavigation from "./ScreenComponents/BottomNavigation";
 
 
 
-export default function FruitDetails({ navigation }) {
+export default function FruitDetails({ navigation, route }) {
+    const { id } = route.params;
     const [isLekker, setIsLekker] = useState(false);
     const [Fruitdata, setFruitdata] = useState([])
 
-    const LoadFruits = async () => {
+    const LoadFruit = async () => {
         try {
-            const response = await fetch(`http://145.24.223.94/api/fruits/${id}`, {
+            const response = await fetch(`http://145.24.223.94/api/fruits/3`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -29,8 +30,10 @@ export default function FruitDetails({ navigation }) {
             });
 
             const data = await response.json();
+            console.log(data)
             if (response.ok) {
-                setFruitdata(data);
+                setFruitdata(data.data);
+             //   setIsLekker(data.data.isLekker)
                 console.log('Fruit correct opgehaald');
             } else {
                 Alert.alert('Fout', data.message || 'Fruit ophalen mislukt.');
@@ -40,6 +43,35 @@ export default function FruitDetails({ navigation }) {
         }
     };
 
+
+    const toggleFruitStatus = async (fruitName) => {
+
+        const updatedisLekker = !isLekker;
+
+        try {
+            const response = await fetch(`http://145.24.223.94/api/fruits/3`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer g360GNGOWNvaZ3rNM4YayTHnsV5ntsxVAPn8otxmdb1d2ed8',
+                },
+                body: JSON.stringify({ isLekker: updatedisLekker }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Update failed');
+            }
+
+            // Locally update the state after a successful update
+            setIsLekker(!isLekker)
+        } catch (error) {
+            Alert.alert('Fout', `Kon status niet bijwerken: ${error.message}`);
+        }
+    };
+
+    useEffect(() => {
+        LoadFruit()
+    }, []);
 
 
     return (
@@ -53,7 +85,6 @@ export default function FruitDetails({ navigation }) {
                 <SettingsIcon navigation={navigation} style={styles.settingsIcon} />
                 <ProfileIcon navigation={navigation} style={styles.profileIcon} />
 
-                {/* Lekker / Niet Lekker Switch */}
 
                 <TouchableOpacity
                     onPress={() => setIsLekker(!isLekker)}
@@ -73,21 +104,23 @@ export default function FruitDetails({ navigation }) {
                 />
 
                 {/* Fruit Name */}
-                <Text style={styles.fruitName}>✔️ appel</Text>
+                <Text style={styles.fruitName}>
+                    {isLekker ? '✔️ ' : ''}{Fruitdata.name}
+                </Text>
 
                 {/* Description */}
                 <View style={styles.descriptionBox}>
                     <Text style={styles.descriptionText}>
-                        ${Fruitdata.description}
+                        {Fruitdata.description}
                     </Text>
                 </View>
 
                 {/* Details Section */}
                 <View style={styles.detailRow}>
                     <View style={styles.detailBox}>
-                        <Text style={styles.detailText}>${Fruitdata.price}</Text>
-                        <Text style={styles.detailText}>${Fruitdata.price}</Text>
-                        <Text style={styles.detailText}>${Fruitdata.price}</Text>
+                        <Text style={styles.detailText}> dit fruit kan je kopen voor ongeveer €{Fruitdata.price}</Text>
+                        <Text style={styles.detailText}> dit fruit is gemiddeld {Fruitdata.size} cm groot!</Text>
+                        <Text style={styles.detailText}> dit fruit weegt gemiddeld {Fruitdata.weight} gram!</Text>
                     </View>
                     <Image
                         source={require('../assets/icon.png')}

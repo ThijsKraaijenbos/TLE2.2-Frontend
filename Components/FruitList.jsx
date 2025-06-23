@@ -39,9 +39,10 @@ export default function FruitList({navigation}) {
             });
 
             const data = await response.json();
+
             if (response.ok) {
-                setFruitdata(data);
-                setDropdownItems(data.map(item => ({ label: item.name, value: item.name })));
+                setFruitdata(data.data);
+                setDropdownItems(data.data.map(item => ({ label: item.name, value: item.name })));
                 console.log('Fruit correct opgehaald');
             } else {
                 Alert.alert('Fout', data.message || 'Fruit ophalen mislukt.');
@@ -159,7 +160,7 @@ export default function FruitList({navigation}) {
                 style={styles.flatList}
                 renderItem={({ item }) => (
                     <TouchableOpacity
-                        onPress={() => navigation.navigate('FruitDetails', { fruitName: item.name })}
+                        onPress={() => navigation.navigate('FruitDetails', { id: item.id })}
                         style={[
                             styles.fruitItem,
                             {
