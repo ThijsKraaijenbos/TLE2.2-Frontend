@@ -62,19 +62,40 @@ export default function HomeScreen({navigation}) {
             const data = await response.json()
             if (response.ok) {
                 const userData = data.userData || {}
-                console.log(userData)
                 const streaks = userData.streak || {}
                 const currentStreak = streaks.current_streak
                 const lastCompleted = streaks?.last_completed_date
 
-                // Check: bestaan currentStreak en lastCompleted?
                 if (currentStreak != null && lastCompleted) {
-                    await setStreak(currentStreak)
-                    await setStreakDate(lastCompleted)
-                    await loadStreakData();
+                    setStreak(currentStreak)
+                    setStreakDate(lastCompleted)
+
+                    const now = new Date();
+                    const formattedDate = `${String(now.getDate()).padStart(2, '0')}-${String(now.getMonth() + 1).padStart(2, '0')}-${now.getFullYear()}`;
+                    if (lastCompleted === formattedDate) {
+                        setDaylyTask(true);
+                    } else {
+                        setDaylyTask(false);
+                    }
                 } else {
                     setStreak(0)
+                    setDaylyTask(false)
                 }
+            // if (response.ok) {
+            //     const userData = data.userData || {}
+            //     console.log(userData)
+            //     const streaks = userData.streak || {}
+            //     const currentStreak = streaks.current_streak
+            //     const lastCompleted = streaks?.last_completed_date
+            //
+            //     // Check: bestaan currentStreak en lastCompleted?
+            //     if (currentStreak != null && lastCompleted) {
+            //         await setStreak(currentStreak)
+            //         await setStreakDate(lastCompleted)
+            //         await loadStreakData();
+            //     } else {
+            //         setStreak(0)
+            //     }
 
             } else {
                 Alert.alert('Fout bij ophalen', data.message || 'Gebruikersinformatie kon niet worden geladen.')
