@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect} from 'react';
 import {
     View,
     Text,
@@ -11,10 +11,14 @@ import {
     ImageBackground,
 } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import {SafeAreaView} from 'react-native-safe-area-context';
 import SettingsIcon from './ScreenComponents/SettingsIcon';
 import ProfileIcon from './ScreenComponents/ProfileIcon';
 import BottomNavigation from "./ScreenComponents/BottomNavigation";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import {useFocusEffect} from "@react-navigation/native";
+
+const User_Token = "user_login_token"
 
 export default function FruitList({navigation}) {
     const [searchText, setSearchText] = useState('');
@@ -22,19 +26,46 @@ export default function FruitList({navigation}) {
     const [selectedFruit, setSelectedFruit] = useState(null);
     const [dropdownItems, setDropdownItems] = useState([]);
     const [fruitdata, setFruitdata] = useState([]);
+    const [userAuth, setUserAuth] = useState('')
 
-    useEffect(() => {
-        LoadFruits();
-    }, []);
+    const getUserToken = async () => {
+        try {
+            const userAuthToken = await AsyncStorage.getItem(User_Token)
+            if (userAuthToken) {
+                setUserAuth(userAuthToken)
+            } else {
+                console.log("Er is geen userdata")
+            }
+        } catch (e) {
+            console.log("Er gaat iets fout met het ophalen van de gebruikersinformatie", e)
+        }
+    }
+
+    useFocusEffect(
+        React.useCallback(() => {
+            getUserToken();
+        }, [])
+    )
+
+    useFocusEffect(
+        React.useCallback(() => {
+            if(userAuth){
+                LoadFruits();
+            }
+        }, [userAuth])
+    )
+
 
     const LoadFruits = async () => {
         try {
+            console.log(userAuth);
             const response = await fetch('http://145.24.223.94/api/fruits', {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization':
-                        'Bearer g360GNGOWNvaZ3rNM4YayTHnsV5ntsxVAPn8otxmdb1d2ed8',
+                    'Authorization': 'Bearer g360GNGOWNvaZ3rNM4YayTHnsV5ntsxVAPn8otxmdb1d2ed8',
+                    'Cache-Control': 'no-cache',
+                    'X-user-login-token' :  userAuth,
                 },
             });
 
@@ -42,8 +73,7 @@ export default function FruitList({navigation}) {
 
             if (response.ok) {
                 setFruitdata(data.data);
-                setDropdownItems(data.data.map(item => ({ label: item.name, value: item.name })));
-                console.log('Fruit correct opgehaald');
+                setDropdownItems(data.data.map(item => ({label: item.name, value: item.name})));
             } else {
                 Alert.alert('Fout', data.message || 'Fruit ophalen mislukt.');
             }
@@ -53,19 +83,20 @@ export default function FruitList({navigation}) {
     };
 
     const toggleFruitStatus = async (fruitName) => {
+
         const fruit = fruitdata.find(f => f.name === fruitName);
         if (!fruit) return;
 
-        const updatedLike = !fruit.like;
+        const updatedEaten = !fruit.has_eaten_before;
 
         try {
-            const response = await fetch(`http://145.24.223.94/api/fruits/${fruit.id}`, {
-                method: 'PATCH',
+            const response = await fetch(`http://145.24.223.94/api/fruits/${fruit.id}/togglePreference`, {
+                method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': 'Bearer g360GNGOWNvaZ3rNM4YayTHnsV5ntsxVAPn8otxmdb1d2ed8',
                 },
-                body: JSON.stringify({ like: updatedLike }),
+                body: JSON.stringify({has_eaten_before: updatedEaten}),
             });
 
             if (!response.ok) {
@@ -76,7 +107,7 @@ export default function FruitList({navigation}) {
             setFruitdata(prev =>
                 prev.map(f =>
                     f.name === fruitName
-                        ? { ...f, like: updatedLike }
+                        ? {...f, like: updatedLike}
                         : f
                 )
             );
@@ -86,19 +117,19 @@ export default function FruitList({navigation}) {
     };
 
 
-
     function borderColor(like) {
-        if (like === true) {
+        if (like == true) {
             return '#45A85B'
-        } else if (like === false) {
+        } else if (like == false) {
             return '#D83F2E'
         }
     }
 
     function Backgroundcolor(like) {
-        if (like === true) {
+        // console.log(like);
+        if (like == true) {
             return '#A8D363'
-        } else if (like === false) {
+        } else if (like == false) {
             return '#FD9A90'
         }
     }
@@ -109,77 +140,79 @@ export default function FruitList({navigation}) {
             style={styles.background}
             resizeMode="cover"
         >
-            <View style={styles.imageOverlay} />
-        <SafeAreaView style={styles.container}>
-            <SettingsIcon navigation={navigation} style={styles.settingsIcon} />
-            <ProfileIcon navigation={navigation} style={styles.profileIcon} />
+            <View style={styles.imageOverlay}/>
+            <SafeAreaView style={styles.container}>
+                <SettingsIcon navigation={navigation} style={styles.settingsIcon}/>
+                <ProfileIcon navigation={navigation} style={styles.profileIcon}/>
 
-            <View style={styles.headerContainer}>
-                {/*<Text style={styles.infoIcon}></Text>*/}
-                <Text style={styles.infoText}>De groote fruitmarkt</Text>
-            </View>
+                <View style={styles.headerContainer}>
+                    {/*<Text style={styles.infoIcon}></Text>*/}
+                    <Text style={styles.infoText}>De groote fruitmarkt</Text>
+                </View>
 
-            <View style={styles.searchContainer}>
-                <TextInput
-                    style={styles.searchInput}
-                    placeholder="Zoek fruit..."
-                    value={searchText}
-                    onChangeText={setSearchText}
+                <View style={styles.searchContainer}>
+                    <TextInput
+                        style={styles.searchInput}
+                        placeholder="Zoek fruit..."
+                        value={searchText}
+                        onChangeText={setSearchText}
+                    />
+                    <Text style={styles.searchIcon}>🔍</Text>
+                </View>
+
+
+                {/* Zoekbare dropdown */}
+                <View style={{marginHorizontal: 16, zIndex: 1000,}}>
+                    <DropDownPicker
+                        open={open}
+                        value={selectedFruit}
+                        items={dropdownItems}
+                        setOpen={setOpen}
+                        setValue={(callback) => {
+                            const selected = callback(selectedFruit);
+                            toggleFruitStatus(selected);
+                            setSelectedFruit(null); // reset selectie na togglen
+                        }}
+                        setItems={() => {
+                        }}
+                        placeholder="Heb je een nieuw iets op? vink hem aan!"
+                        searchable={true}
+                        searchPlaceholder="Zoek fruit..."
+                        listMode="MODAL"
+                    />
+                </View>
+
+                <FlatList
+                    data={fruitdata.filter(item =>
+                        item.name.toLowerCase().includes(searchText.toLowerCase())
+                    )}
+                    keyExtractor={(item) => item.name}
+                    numColumns={2}
+                    contentContainerStyle={styles.grid}
+                    style={styles.flatList}
+                    renderItem={({item}) => (
+                        <TouchableOpacity
+                            onPress={() => navigation.navigate('FruitDetails', {id: item.id})}
+                            style={[
+                                styles.fruitItem,
+                                {
+                                    backgroundColor: Backgroundcolor(item.user_preference.like),
+                                    borderColor: borderColor(item.user_preference.like),
+                                    borderWidth: 3,
+                                }
+                            ]}
+                        >
+                            <Text> {item.user_preference.like}</Text>
+                            <Image source={item.image} style={styles.fruitImage}/>
+                            {item.has_eaten_before && <Text style={styles.checkmark}>✔️</Text>}
+                            <Text style={styles.fruitName}>{item.name}</Text>
+                        </TouchableOpacity>
+                    )}
+
                 />
-                <Text style={styles.searchIcon}>🔍</Text>
-            </View>
 
-
-            {/* Zoekbare dropdown */}
-            <View style={{ marginHorizontal: 16, zIndex: 1000, }}>
-                <DropDownPicker
-                    open={open}
-                    value={selectedFruit}
-                    items={dropdownItems}
-                    setOpen={setOpen}
-                    setValue={(callback) => {
-                        const selected = callback(selectedFruit);
-                        toggleFruitStatus(selected);
-                        setSelectedFruit(null); // reset selectie na togglen
-                    }}
-                    setItems={() => {}}
-                    placeholder="Heb je een nieuw iets op? vink hem aan!"
-                    searchable={true}
-                    searchPlaceholder="Zoek fruit..."
-                    listMode="MODAL"
-                />
-            </View>
-
-            <FlatList
-                data={fruitdata.filter(item =>
-                    item.name.toLowerCase().includes(searchText.toLowerCase())
-                )}
-                keyExtractor={(item) => item.name}
-                numColumns={2}
-                contentContainerStyle={styles.grid}
-                style={styles.flatList}
-                renderItem={({ item }) => (
-                    <TouchableOpacity
-                        onPress={() => navigation.navigate('FruitDetails', { id: item.id })}
-                        style={[
-                            styles.fruitItem,
-                            {
-                                backgroundColor: Backgroundcolor(item.like),
-                                borderColor: borderColor(item.like),
-                                borderWidth: 3,
-                            }
-                        ]}
-                    >
-                        <Image source={item.image} style={styles.fruitImage} />
-                        {item.has_eaten_before && <Text style={styles.checkmark}>✔️</Text>}
-                        <Text style={styles.fruitName}>{item.name}</Text>
-                    </TouchableOpacity>
-                )}
-
-            />
-
-            <BottomNavigation navigation={navigation} />
-        </SafeAreaView>
+                <BottomNavigation navigation={navigation}/>
+            </SafeAreaView>
         </ImageBackground>
     );
 }
