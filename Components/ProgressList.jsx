@@ -25,7 +25,7 @@ export default function ProgressList({navigation}) {
                 })
 
                 const userData = response.data.userData
-                setStreak(userData.streaks.longest_streak)
+                setStreak(userData.streaks.current_streak)
 
             } catch (error) {
                 console.error('Fout bij ophalen profiel:', error)

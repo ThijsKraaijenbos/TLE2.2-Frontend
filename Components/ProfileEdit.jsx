@@ -4,6 +4,8 @@ import {useProfile} from './ScreenComponents/ProfileContext'
 import {Ionicons} from "@expo/vector-icons"
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import axios from 'axios'
+import { useFocusEffect } from '@react-navigation/native'
+import { useCallback } from 'react'
 
 
 export default function ProfileEdit({navigation}) {
@@ -11,7 +13,9 @@ export default function ProfileEdit({navigation}) {
     const [name, setName] = useState(displayName)
     const [selectedImageId, setSelectedImageId] = useState(null)
     const [tempImage, setTempImage] = useState(profileImage)
+    const { userId } = useProfile()
 
+    
 
     const profileImages = [
         {id: 1, src: require('../assets/gray.jpg')},
@@ -20,11 +24,13 @@ export default function ProfileEdit({navigation}) {
         {id: 4, src: require('../assets/banana.jpg')},
     ]
 
-    useEffect(() => {
+    useFocusEffect(
+        useCallback(() => {
         setTempImage(profileImage)
         setName(displayName)
         setSelectedImageId(null)
-    }, [profileImage, displayName])
+        }, [profileImage, displayName])
+    )
 
     return (
         <ImageBackground
@@ -79,8 +85,10 @@ export default function ProfileEdit({navigation}) {
 
                 <Pressable style={styles.saveButton} onPress={async () => {
                     try {
+
                         const token = await AsyncStorage.getItem('user_login_token')
-                        await axios.put('http://145.24.223.94/api/user', {
+                        console.log(`http://145.24.223.94/api/users/${userId}`)
+                        await axios.put(`http://145.24.223.94/api/users/${userId}`, {
                             name: name,
                             profile_image_id: selectedImageId,
                         }, {
@@ -90,6 +98,13 @@ export default function ProfileEdit({navigation}) {
                                 'Content-Type': 'application/json',
                             }
                         })
+
+                        setDisplayName(name)
+
+                        const selectedImage = profileImages.find(img => img.id === selectedImageId)
+                        if (selectedImage) {
+                            setProfileImage(selectedImage.src)
+                        }
 
                         navigation.goBack()
                     } catch (error) {

@@ -16,6 +16,7 @@ const profileImages = [
 export function ProfileProvider({ children }) {
     const [profileImage, setProfileImage] = useState(require('../../assets/gray.jpg'))
     const [displayName, setDisplayName] = useState('')
+    const [userId, setUserId] = useState('')
 
     useEffect(() => {
         async function fetchUserData() {
@@ -40,6 +41,10 @@ export function ProfileProvider({ children }) {
                     setDisplayName(user.name)
                 }
 
+                if (user.id) {
+                    setUserId(user.id)
+                }
+
                 if (user.profile_image_id?.id) {
                     const foundImage = profileImages.find(
                         (img) => img.id === user.profile_image_id.id
@@ -57,7 +62,7 @@ export function ProfileProvider({ children }) {
     }, [])
 
     return (
-        <ProfileContext.Provider value={{ profileImage, setProfileImage, displayName, setDisplayName }}>
+        <ProfileContext.Provider value={{ profileImage, setProfileImage, displayName, setDisplayName, userId, setUserId }}>
             {children}
         </ProfileContext.Provider>
     )

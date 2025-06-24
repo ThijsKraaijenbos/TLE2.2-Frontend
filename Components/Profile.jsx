@@ -2,15 +2,18 @@ import {Pressable, StyleSheet, Text, View, ImageBackground, Image} from "react-n
 import {Ionicons} from "@expo/vector-icons"
 import {LinearGradient} from 'expo-linear-gradient'
 import {useProfile} from './ScreenComponents/ProfileContext'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import axios from 'axios'
+import { useFocusEffect } from '@react-navigation/native'
 
 export default function Profile({ navigation }) {
     const [displayName, setDisplayName] = useState('')
     const [profileImage, setProfileImage] = useState(null)
+    const [userId, setUserId] = useState(null)
 
-    useEffect(() => {
+    useFocusEffect(
+        useCallback(() => {
         async function loadProfile() {
             try {
                 const token = await AsyncStorage.getItem('user_login_token')
@@ -25,6 +28,8 @@ export default function Profile({ navigation }) {
 
                 const userData = response.data.userData
                 setDisplayName(userData.name)
+                setUserId(userData.id)
+                console.log(userData.id)
                 //
                 //
                 setProfileImage({ uri: userData.profile_image_id.file_path })
@@ -35,16 +40,17 @@ export default function Profile({ navigation }) {
             }
         }
 
-        loadProfile()
-    }, [])
+            loadProfile()
+        }, [])
+    )
 
     const handleLogout = async () => {
-        await AsyncStorage.removeItem('user_login_token');
+        await AsyncStorage.removeItem('user_login_token')
         navigation.reset({
             index: 0,
             routes: [{ name: 'Login' }],
-        });
-    };
+        })
+    }
 
 
     return (
