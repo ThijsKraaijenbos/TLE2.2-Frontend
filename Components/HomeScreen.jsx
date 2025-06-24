@@ -1,8 +1,8 @@
-import {Alert, ImageBackground, Pressable, Share, StyleSheet, Text, View} from "react-native";
+import {Alert, Animated, Easing, Image, ImageBackground, Pressable, Share, StyleSheet, Text, View} from "react-native";
 import BottomNavigation from "./ScreenComponents/BottomNavigation";
 import ProfileIcon from "./ScreenComponents/ProfileIcon";
 import SettingsIcon from "./ScreenComponents/SettingsIcon";
-import {useCallback, useEffect, useState} from "react";
+import {useCallback, useEffect, useRef, useState} from "react";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Ionicons} from "@expo/vector-icons";
 import {SafeAreaView} from "react-native-safe-area-context";
@@ -140,13 +140,10 @@ export default function HomeScreen({navigation}) {
         return fruitCombinaties[index];
     };
 
-
     const updateStreak = async () => {
         try {
-            console.log(userAuth)
             const today = new Date();
             const formattedDate = `${String(today.getDate()).padStart(2, '0')}-${String(today.getMonth() + 1).padStart(2, '0')}-${today.getFullYear()}`;
-            console.log(formattedDate)
             const response = await fetch('http://145.24.223.94/api/updateStreak', {
                 method: 'PUT',
                 headers: {
@@ -161,20 +158,37 @@ export default function HomeScreen({navigation}) {
             const data = await response.json();
             if (response.ok) {
                 await AsyncStorage.setItem(Daily_Task, JSON.stringify(true));
+
                 setDailyTask(true);
                 if (!dailyTask) {
-                    console.log(dailyTask)
+                    await triggerAnimation()
+                    await fetchUserInfo(userAuth)
+                    await new Promise(resolve => setTimeout(resolve, 500));
                     navigation.navigate('FruitList');
                 }
             } else {
-                console.log("foutresponse" + data)
                 alert("Opslaan van de streak is mislukt: " + data);
             }
-
         } catch (e) {
             console.log("Er gaat iets fout met het updaten van de streak", e);
         }
     }
+
+    const scaleAnim = useRef(new Animated.Value(0)).current;
+
+    const triggerAnimation = () => {
+        return new Promise((resolve) => {
+            scaleAnim.setValue(0);
+            Animated.timing(scaleAnim, {
+                toValue: 1,
+                duration: 2000,
+                easing: Easing.out(Easing.exp),
+                useNativeDriver: true,
+            }).start(() => {
+                resolve();
+            });
+        });
+    };
 
     const handleYesPressed = () => {
         if (dailyTask === false) {
@@ -217,6 +231,29 @@ export default function HomeScreen({navigation}) {
                     <Text style={styles.streakText}>{streak}</Text>
                 </ImageBackground>
             </View>
+            <Animated.View
+                style={{
+                    position: 'absolute',
+                    top: '40%',
+                    left: '40%',
+                    transform: [
+                        {
+                            scale: scaleAnim.interpolate({
+                                inputRange: [0, 1],
+                                outputRange: [0.5, 1.5],
+                            })
+                        }
+                    ],
+                    opacity: scaleAnim.interpolate({
+                        inputRange: [0, 0.5, 1],
+                        outputRange: [0, 1, 0],
+                    }),
+                    zIndex: 10,
+                }}
+            >
+                <Image source={require('../assets/checkmark.png')} style={{width: 100, height: 100}}/>
+            </Animated.View>
+
             <View style={styles.questionContainer}>
                 <Text style={styles.questionText}>Heb jij vandaag al</Text>
                 <View style={styles.amountContainer}>
@@ -242,7 +279,7 @@ export default function HomeScreen({navigation}) {
 
                 <View style={styles.shareContainer}>
                     <Text style={styles.shareText}>Deze suggestie delen?</Text>
-                    <Pressable onPress={()=>handleShare()}>
+                    <Pressable onPress={() => handleShare()}>
                         <Ionicons name="arrow-forward" size={32} style={styles.icon}/>
                     </Pressable>
                 </View>

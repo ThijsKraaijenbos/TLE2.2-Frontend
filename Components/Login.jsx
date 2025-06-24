@@ -11,8 +11,7 @@ export default function Login({navigation}) {
         const testUserAuth = async () => {
             try {
                 const userAuth = await AsyncStorage.getItem(User_Token)
-                console.log(userAuth)
-                if (userAuth && userAuth.trim() !== '') { //niet null en niet undifined
+                if (userAuth && userAuth.trim() !== '') {
                     navigation.navigate('Home');
                 }
             } catch (e) {

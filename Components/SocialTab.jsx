@@ -41,7 +41,6 @@ export default function SocialTab({navigation}) {
                 }
             );
             const data = await response.json();
-            console.log(data)
             if (response.ok) {
                 setFriends(data?.friends)
             } else {
