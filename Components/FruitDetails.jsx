@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
     Text,
     View,
@@ -6,23 +6,110 @@ import {
     StyleSheet,
     ImageBackground,
     Switch,
-    TouchableOpacity
+    TouchableOpacity, Alert
 } from 'react-native';
 import SettingsIcon from './ScreenComponents/SettingsIcon';
 import ProfileIcon from './ScreenComponents/ProfileIcon';
 import BottomNavigation from "./ScreenComponents/BottomNavigation";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import {useFocusEffect} from "@react-navigation/native";
+
+const User_Token = "user_login_token"
 
 
+export default function FruitDetails({ navigation, route }) {
+    const { id } = route.params;
+    const [isLekker, setIsLekker] = useState(true);
+    const [hasEaten, sethasEaten] = useState(false);
+    const [Fruitdata, setFruitdata] = useState([])
+    const [userAuth, setUserAuth] = useState('')
 
-export default function FruitDetails({ navigation }) {
-    const [isLekker, setIsLekker] = useState(false);
+    const getUserToken = async () => {
 
+        try {
+            const userAuthToken = await AsyncStorage.getItem(User_Token)
+            if (userAuthToken) {
+                setUserAuth(userAuthToken)
+            } else {
+                console.log("Er is geen userdata")
+            }
+        } catch (e) {
+            console.log("Er gaat iets fout met het ophalen van de gebruikersinformatie", e)
+        }
+    }
+
+    const LoadFruit = async () => {
+        try {
+            const response = await fetch(`http://145.24.223.94/api/fruits/${id}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer g360GNGOWNvaZ3rNM4YayTHnsV5ntsxVAPn8otxmdb1d2ed8',
+                    'X-user-login-token' :  userAuth,
+                    'Cache-Control': 'no-cache',
+                },
+            });
+
+            const data = await response.json();
+            console.log(data)
+            if (response.ok) {
+                    setFruitdata(data.data);
+                setIsLekker(data.data.user_preference.like)
+                sethasEaten(data.data.user_preference.has_eaten_before)
+                console.log(data.data.user_preference.like)
+                console.log('Fruit correct opgehaald');
+            } else {
+                Alert.alert('Fout', data.message || 'Fruit ophalen mislukt.');
+            }
+        } catch (err) {
+            Alert.alert('Fout', `Er is een netwerkfout opgetreden: ${err}`);
+        }
+    };
+
+
+    const toggleFruitStatus = async () => {
+        const newValue = !isLekker;
+        try {
+            const response = await fetch(`http://145.24.223.94/api/fruits/${id}/togglePreference`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer g360GNGOWNvaZ3rNM4YayTHnsV5ntsxVAPn8otxmdb1d2ed8',
+                    'X-user-login-token': userAuth
+                },
+                body: JSON.stringify({ like: newValue }),
+            });
+
+            const result = await response.json();
+            console.log("Toggle API response:", result);
+
+            if (!response.ok) throw new Error('Update failed');
+            setIsLekker(newValue);
+        } catch (error) {
+            Alert.alert('Fout', `Kon status niet bijwerken: ${error.message}`);
+        }
+    };
+
+
+    useFocusEffect(
+        React.useCallback(() => {
+            getUserToken();
+        }, [])
+    )
+
+    useFocusEffect(
+        React.useCallback(() => {
+            if(userAuth){
+                LoadFruit();
+            }
+        }, [userAuth])
+    )
 
 
 
     return (
         <ImageBackground
-            source={require('../assets/il_fullxfull.png')}
+            source={require('../assets/fruitbackground.png')}
             style={styles.background}
             imageStyle={styles.imageStyle}
         >
@@ -31,10 +118,9 @@ export default function FruitDetails({ navigation }) {
                 <SettingsIcon navigation={navigation} style={styles.settingsIcon} />
                 <ProfileIcon navigation={navigation} style={styles.profileIcon} />
 
-                {/* Lekker / Niet Lekker Switch */}
 
                 <TouchableOpacity
-                    onPress={() => setIsLekker(!isLekker)}
+                    onPress={() => toggleFruitStatus()}
                     style={[
                         styles.switchRow,
                         { backgroundColor: isLekker ? '#A8D363' : '#f7b2a4' }
@@ -51,21 +137,23 @@ export default function FruitDetails({ navigation }) {
                 />
 
                 {/* Fruit Name */}
-                <Text style={styles.fruitName}>✔️ appel</Text>
+                <Text style={styles.fruitName}>
+                    {hasEaten ? '✔️ ' : ''}{Fruitdata.name}
+                </Text>
 
                 {/* Description */}
                 <View style={styles.descriptionBox}>
                     <Text style={styles.descriptionText}>
-                        De appel is een van de meest gegeten fruitsoorten ter wereld. Hij komt oorspronkelijk uit Centraal-Azië, waar de wilde appel (Malus sieversii) nog steeds in het wild groeit. Tegenwoordig zijn er duizenden appelrassen, variërend van zoet tot zuur, en van knapperig tot zacht.
+                        {Fruitdata.description}
                     </Text>
                 </View>
 
                 {/* Details Section */}
                 <View style={styles.detailRow}>
                     <View style={styles.detailBox}>
-                        <Text style={styles.detailText}>prijs</Text>
-                        <Text style={styles.detailText}>locatie: overal</Text>
-                        <Text style={styles.detailText}>rating: geweldig!</Text>
+                        <Text style={styles.detailText}> dit fruit kan je kopen voor ongeveer €{Fruitdata.price}</Text>
+                        <Text style={styles.detailText}> dit fruit is gemiddeld {Fruitdata.size} cm groot!</Text>
+                        <Text style={styles.detailText}> dit fruit weegt gemiddeld {Fruitdata.weight} gram!</Text>
                     </View>
                     <Image
                         source={require('../assets/icon.png')}
@@ -75,7 +163,7 @@ export default function FruitDetails({ navigation }) {
 
                 {/* Fun Fact */}
                 <View style={styles.funFactBox}>
-                    <Text style={styles.funFactText}>fun fact:{"\n"}een appel per dag is gezond</Text>
+                    <Text style={styles.funFactText}>fun fact:{"\n"}geen leuke feitjes gevonden</Text>
                 </View>
             </View>
             <BottomNavigation navigation={navigation}/>

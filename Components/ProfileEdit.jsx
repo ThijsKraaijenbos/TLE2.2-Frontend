@@ -1,22 +1,54 @@
-import React, {useState} from 'react';
-import {View, TextInput, Button, StyleSheet, Pressable, Image, Text, ImageBackground} from 'react-native';
-import {useProfile} from './ScreenComponents/ProfileContext';
-import {Ionicons} from "@expo/vector-icons";
+import React, {useEffect, useState} from 'react'
+import {View, TextInput, Button, StyleSheet, Pressable, Image, Text, ImageBackground, Alert} from 'react-native'
+import {useProfile} from './ScreenComponents/ProfileContext'
+import {Ionicons} from "@expo/vector-icons"
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import axios from 'axios'
+import {useFocusEffect} from '@react-navigation/native'
+import {useCallback} from 'react'
+
 
 export default function ProfileEdit({navigation}) {
-    const {displayName, setDisplayName, profileImage, setProfileImage} = useProfile();
-    const [name, setName] = useState(displayName);
+    const {profileImage, setProfileImage, displayName, setDisplayName} = useProfile()
+    const [name, setName] = useState(displayName)
+    const [selectedImageId, setSelectedImageId] = useState(null)
+    const [profileImages, setProfileImages] = useState([])
+    const {userId} = useProfile()
+    const [tempImage, setTempImage] = useState(
+        typeof profileImage === 'string' ? { uri: profileImage } : profileImage
+    )
 
-    const profileImages = [
-        require('../assets/fruitbackground.png'),
-        require('../assets/gray.jpg'),
-        require('../assets/man.jpg'),
-        require('../assets/banana.jpg'),
-        require('../assets/banana.jpg'),
-        require('../assets/banana.jpg'),
-        require('../assets/banana.jpg'),
-        require('../assets/banana.jpg'),
-    ];
+    // const profileImages = [
+    //     {id: 1, src: require('../assets/gray.jpg')},
+    //     {id: 2, src: require('../assets/fruitbackground.png')},
+    //     {id: 3, src: require('../assets/man.jpg')},
+    //     {id: 4, src: require('../assets/banana.jpg')},
+    // ]
+    useFocusEffect(
+        useCallback(() => {
+
+            setName(displayName)
+            setSelectedImageId(null)
+
+            async function fetchProfileImages() {
+                try {
+                    const token = await AsyncStorage.getItem('user_login_token')
+                    const response = await axios.get(`http://145.24.223.94/api/profile-images`, {
+                        headers: {
+                            'X-user-login-token': token,
+                            'Authorization': 'Bearer g360GNGOWNvaZ3rNM4YayTHnsV5ntsxVAPn8otxmdb1d2ed8',
+                            'Content-Type': 'application/json',
+                        }
+                    })
+                    setProfileImages(Array.isArray(response.data.images) ? response.data.images : [])
+                    setTempImage(typeof profileImage === 'string' ? { uri: profileImage } : profileImage)
+                } catch (error) {
+                    console.error('Fout bij ophalen profielfoto\'s:', error)
+                }
+            }
+            fetchProfileImages()
+        }, [profileImage, displayName])
+    )
 
     return (
         <ImageBackground
@@ -38,10 +70,10 @@ export default function ProfileEdit({navigation}) {
                     </View>
                 </View>
                 <View style={styles.profileContainer}>
-                    <Image source={profileImage} style={styles.profileImage}/>
+                    <Image source={tempImage} style={styles.profileImage}/>
                 </View>
 
-                <Text style={styles.name}>{displayName}</Text>
+                <Text style={styles.name}>{name}</Text>
 
                 <Text style={styles.label}>Pas je naam aan</Text>
                 <TextInput
@@ -53,23 +85,53 @@ export default function ProfileEdit({navigation}) {
 
                 <Text style={styles.label}>Kies een profielfoto</Text>
                 <View style={styles.imageSelector}>
-                    {profileImages.map((img, index) => (
-                        <Pressable key={index} onPress={() => setProfileImage(img)}>
+                    {Array.isArray(profileImages) ? profileImages.map(img => (
+                        <Pressable key={img.id} onPress={() => {
+                            setTempImage({ uri: img.file_path })
+                            setSelectedImageId(img.id)
+                        }}>
                             <Image
-                                source={img}
+                                source={{ uri: img.file_path }}
                                 style={[
                                     styles.profileOption,
-                                    profileImage === img && styles.selectedProfile
+                                    selectedImageId === img.id && styles.selectedProfile
                                 ]}
                             />
                         </Pressable>
-                    ))}
+                    )) : (
+                        <Text>Geen profielfoto's gevonden</Text>
+                    )}
                 </View>
 
-                <Pressable style={styles.saveButton} onPress={() => {
-                    setDisplayName(name);
-                    navigation.goBack();
-                }} >
+                <Pressable style={styles.saveButton} onPress={async () => {
+                    try {
+
+                        const token = await AsyncStorage.getItem('user_login_token')
+                        console.log(`http://145.24.223.94/api/users/${userId}`)
+                        await axios.put(`http://145.24.223.94/api/users/${userId}`, {
+                            name: name,
+                            profile_image_id: selectedImageId,
+                        }, {
+                            headers: {
+                                'X-user-login-token': token,
+                                'Authorization': 'Bearer g360GNGOWNvaZ3rNM4YayTHnsV5ntsxVAPn8otxmdb1d2ed8',
+                                'Content-Type': 'application/json',
+                            }
+                        })
+
+                        setDisplayName(name)
+
+                        const selectedImage = profileImages.find(img => img.id === selectedImageId)
+                        if (selectedImage) {
+                            setProfileImage({ uri: selectedImage.file_path })
+                        }
+
+                        navigation.goBack()
+                    } catch (error) {
+                        console.error('Fout bij opslaan profiel:', error)
+                        Alert.alert('Fout', 'Profiel kon niet worden opgeslagen.')
+                    }
+                }}>
                     <Text style={styles.saveButtonText}>Opslaan</Text>
                 </Pressable>
 
@@ -162,4 +224,4 @@ const styles = StyleSheet.create({
         marginHorizontal: 10,
         color: '#000929'
     },
-});
+})

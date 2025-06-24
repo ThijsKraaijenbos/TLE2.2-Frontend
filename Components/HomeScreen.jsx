@@ -35,10 +35,9 @@ export default function HomeScreen({navigation}) {
 
     const getUserToken = async () => {
         try {
-            const userAuthToken = await AsyncStorage.getItem(User_Token)
+            const userAuthToken = await AsyncStorage.getItem(`User_Token`)
             if (userAuthToken) {
                 setUserAuth(userAuthToken)
-                fetchUserInfo(userAuthToken)
             } else {
                 console.log("Er is geen userdata")
             }

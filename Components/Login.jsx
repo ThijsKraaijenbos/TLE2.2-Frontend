@@ -1,10 +1,15 @@
 import {Pressable, Image, Text, TextInput, View, StyleSheet, Alert} from "react-native";
 import {useEffect, useState} from "react";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import AsyncStorage from "@react-native-async-storage/async-storage"
+import { useProfile } from './ScreenComponents/ProfileContext'
+
 
 const User_Token = 'user_login_token'
 
+
+
 export default function Login({navigation}) {
+    const { setDisplayName, setProfileImage, setUserId } = useProfile()
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('')
     useEffect(() => {
@@ -47,11 +52,33 @@ export default function Login({navigation}) {
 
             const data = await response.json()
             if (response.ok) {
-                const token = data['user-login-token']
-                await AsyncStorage.setItem(User_Token, token)
-                navigation.navigate('Home')
+                const token = data['user-login-token'];
+                await AsyncStorage.setItem(User_Token, token);
+
+                const userResponse = await fetch('http://145.24.223.94/api/user', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-user-login-token': token,
+                        'Authorization': 'Bearer g360GNGOWNvaZ3rNM4YayTHnsV5ntsxVAPn8otxmdb1d2ed8'
+                    }
+                });
+
+                const userData = await userResponse.json();
+                const user = userData.userData;
+
+                setDisplayName(user.name);
+                setUserId(user.id);
+
+
+
+                if (userData.profile_image_id?.file_path) {
+                    setProfileImage({ uri: userData.profile_image_id.file_path });
+                }
+
+                navigation.navigate('Home');
             } else {
-                Alert.alert('Login mislukt', data.message || 'Onjuiste inloggegevens.')
+                Alert.alert('Login mislukt', data.message || 'Onjuiste inloggegevens.');
             }
         } catch (error) {
             console.error('Login fout:', error)
