@@ -35,9 +35,10 @@ export default function HomeScreen({navigation}) {
 
     const getUserToken = async () => {
         try {
-            const userAuthToken = await AsyncStorage.getItem(`User_Token`)
+            const userAuthToken = await AsyncStorage.getItem(User_Token)
             if (userAuthToken) {
                 setUserAuth(userAuthToken)
+                fetchUserInfo(userAuthToken)
             } else {
                 console.log("Er is geen userdata")
             }
@@ -156,8 +157,7 @@ export default function HomeScreen({navigation}) {
             })
             const data = await response.json();
             if (response.ok) {
-                await AsyncStorage.setItem(Daily_Task, JSON.stringify(true));
-
+                await AsyncStorage.setItem(Daily_Task, JSON.stringify(true))
                 setDailyTask(true);
                 if (!dailyTask) {
                     await triggerAnimation()
