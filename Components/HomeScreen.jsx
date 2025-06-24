@@ -1,4 +1,4 @@
-import {Alert, ImageBackground, Pressable, StyleSheet, Text, View} from "react-native";
+import {Alert, ImageBackground, Pressable, Share, StyleSheet, Text, View} from "react-native";
 import BottomNavigation from "./ScreenComponents/BottomNavigation";
 import ProfileIcon from "./ScreenComponents/ProfileIcon";
 import SettingsIcon from "./ScreenComponents/SettingsIcon";
@@ -193,6 +193,16 @@ export default function HomeScreen({navigation}) {
         }
     };
 
+    const handleShare = async () => {
+        try {
+            await Share.share({
+                message: `Ik kreeg deze suggestie:\n\n"${suggestion}"\n\nWat vind jij ervan?`,
+            });
+        } catch (error) {
+            console.error('Fout bij delen:', error.message);
+        }
+    };
+
     return (
         <ImageBackground
             source={require('../assets/fruitbackground.png')}
@@ -232,7 +242,7 @@ export default function HomeScreen({navigation}) {
 
                 <View style={styles.shareContainer}>
                     <Text style={styles.shareText}>Deze suggestie delen?</Text>
-                    <Pressable>
+                    <Pressable onPress={()=>handleShare()}>
                         <Ionicons name="arrow-forward" size={32} style={styles.icon}/>
                     </Pressable>
                 </View>

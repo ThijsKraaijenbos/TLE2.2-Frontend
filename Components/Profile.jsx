@@ -2,11 +2,20 @@ import {Pressable, StyleSheet, Text, View, ImageBackground, Image} from "react-n
 import {Ionicons} from "@expo/vector-icons"
 import {LinearGradient} from 'expo-linear-gradient'
 import {useProfile} from './ScreenComponents/ProfileContext'
-
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function Profile({navigation}) {
 
     const {profileImage, displayName} = useProfile();
+
+    const handleLogout = async () => {
+        await AsyncStorage.removeItem('user_login_token');
+        navigation.reset({
+            index: 0,
+            routes: [{ name: 'Login' }],
+        });
+    };
+
 
     return (
         <ImageBackground
@@ -60,6 +69,10 @@ export default function Profile({navigation}) {
                             <Text style={styles.title}>Trofeeën</Text>
                             <Ionicons name="trophy" size={50} style={styles.boxIcon}/>
                         </LinearGradient>
+                    </Pressable>
+
+                    <Pressable style={styles.logout} onPress={handleLogout}>
+                        <Text style={styles.logoutText}>Uitloggen</Text>
                     </Pressable>
                 </View>
             </View>
@@ -127,5 +140,21 @@ const styles = StyleSheet.create({
         flexDirection: "column",
         justifyContent: "space-evenly",
         flex: 3
+    },
+    logout: {
+        borderColor: '#9f3e34',
+        backgroundColor: '#fd9a90',
+        borderWidth: 4,
+        borderRadius: 3,
+        width: 110,
+        alignSelf: "center",
+        padding: 5,
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    logoutText: {
+        fontSize: 20,
+        color: '#9f3e34',
+        fontWeight: 'bold'
     }
-});
+})
