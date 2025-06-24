@@ -29,10 +29,12 @@ export default function Profile({ navigation }) {
                 const userData = response.data.userData
                 setDisplayName(userData.name)
                 setUserId(userData.id)
-                console.log(userData.id)
+                console.log(userData)
                 //
                 //
-                setProfileImage({ uri: userData.profile_image_id.file_path })
+                if (userData.profile_image?.file_path) {
+                    setProfileImage({ uri: userData.profile_image.file_path });
+                }
                 //
                 //
             } catch (error) {
