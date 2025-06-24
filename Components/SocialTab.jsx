@@ -15,45 +15,19 @@ export default function SocialTab({navigation}) {
     const [loading, setLoading] = useState(true);
     const [userAuth, setUserAuth] = useState('');
     const [friendsMail, setFriendsMail] = useState('')
-    const [userData, setUserData] = useState([])
-
     const getUserToken = async () => {
         try {
             const userAuthToken = await AsyncStorage.getItem(User_Token)
             if (userAuthToken) {
                 setUserAuth(userAuthToken)
-                fetchUser(userAuthToken)
                 fetchFriends(userAuthToken)
-            } else {
-                console.log("Er is geen userdata")
             }
         } catch (e) {
             console.log("Er gaat iets fout met het ophalen van de gebruikersinformatie", e)
         }
 
     }
-    const fetchUser = async (token) => {
-        try {
-            const response = await fetch('http://145.24.223.94/api/user',
-                {
-                    method: "GET",
-                    headers: {
-                        'Accept': 'application/json',
-                        'Authorization': 'Bearer g360GNGOWNvaZ3rNM4YayTHnsV5ntsxVAPn8otxmdb1d2ed8',
-                        'X-user-login-token': token,
-                        'X-with ': "streak"
-                    }
-                }
-            )
-            const data = response.json()
-            console.log(data)
-            if (response.ok) {
-                setUserData(data)
-            }
-        } catch (e){
-            alert("Er gaat iets fout met het ophalen vand de gebruiker" + e)
-        }
-    }
+
     const fetchFriends = async (token) => {
         try {
             const response = await fetch('http://145.24.223.94/api/friends',
@@ -88,17 +62,14 @@ export default function SocialTab({navigation}) {
     }
 
     const handleInvite = async () => {
-        const email = friendsMail.trim().toLowerCase(); // Normaliseer hoofdletters
+        const email = friendsMail.trim().toLowerCase();
 
-        // Stap 1: check of deze email al in je vriendenlijst zit
         const alreadyFriend = friends.some(friend => friend.email?.toLowerCase() === email);
 
         if (alreadyFriend) {
             alert("Jullie zijn al vrienden");
             return;
         }
-
-        // Stap 2: als niet, probeer uitnodiging te versturen
         try {
             const response = await fetch('http://145.24.223.94/api/friends', {
                 method: "POST",
@@ -114,8 +85,8 @@ export default function SocialTab({navigation}) {
             const data = await response.json();
 
             if (response.ok) {
-                await fetchFriends(userAuth); // Herlaad de vriendenlijst
-                setFriendsMail(''); // Wis het veld
+                await fetchFriends(userAuth);
+                setFriendsMail('');
             } else {
                 alert(data?.message || "Er ging iets mis");
             }
@@ -147,6 +118,7 @@ export default function SocialTab({navigation}) {
                             onChangeText={setFriendsMail}
                             placeholder="email"
                             style={styles.input}
+                            keyboardType={"email-address"}
                             placeholderTextColor="#182700"
                         />
                         <Pressable onPress={handleInvite} style={styles.searchButton}>
@@ -159,7 +131,7 @@ export default function SocialTab({navigation}) {
                     <View style={styles.sectionTitleContainer2}>
                         <Text style={styles.sectionTitle}>Jouw Vrienden</Text>
                     </View>
-                    <UserList friends={friends}/>
+                    <UserList users={friends}/>
                 </View>
             </View>
             <View style={styles.bottomNav}>
