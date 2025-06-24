@@ -26,7 +26,7 @@ export default function ProfileEdit({navigation}) {
     // ]
     useFocusEffect(
         useCallback(() => {
-            setTempImage(typeof profileImage === 'string' ? { uri: profileImage } : profileImage)
+
             setName(displayName)
             setSelectedImageId(null)
 
@@ -41,7 +41,7 @@ export default function ProfileEdit({navigation}) {
                         }
                     })
                     setProfileImages(Array.isArray(response.data.images) ? response.data.images : [])
-                    console.log('profile images response:', response.data)
+                    setTempImage(typeof profileImage === 'string' ? { uri: profileImage } : profileImage)
                 } catch (error) {
                     console.error('Fout bij ophalen profielfoto\'s:', error)
                 }
@@ -123,7 +123,7 @@ export default function ProfileEdit({navigation}) {
 
                         const selectedImage = profileImages.find(img => img.id === selectedImageId)
                         if (selectedImage) {
-                            setProfileImage(selectedImage.src)
+                            setProfileImage({ uri: selectedImage.file_path })
                         }
 
                         navigation.goBack()
