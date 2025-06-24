@@ -163,7 +163,7 @@ export default function FruitDetails({ navigation, route }) {
 
                 {/* Fun Fact */}
                 <View style={styles.funFactBox}>
-                    <Text style={styles.funFactText}>fun fact:{"\n"}</Text>
+                    <Text style={styles.funFactText}>fun fact:{"\n"} {Fruitdata.fun_facts[0] ?? "geen leuke feitjes gevonden"}</Text>
                 </View>
             </View>
             <BottomNavigation navigation={navigation}/>
