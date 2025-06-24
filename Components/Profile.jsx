@@ -2,19 +2,57 @@ import {Pressable, StyleSheet, Text, View, ImageBackground, Image} from "react-n
 import {Ionicons} from "@expo/vector-icons"
 import {LinearGradient} from 'expo-linear-gradient'
 import {useProfile} from './ScreenComponents/ProfileContext'
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import React, { useEffect, useState, useCallback } from 'react'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import axios from 'axios'
+import { useFocusEffect } from '@react-navigation/native'
 
-export default function Profile({navigation}) {
+export default function Profile({ navigation }) {
+    const [displayName, setDisplayName] = useState('')
+    const [profileImage, setProfileImage] = useState(null)
+    const [userId, setUserId] = useState(null)
 
-    const {profileImage, displayName} = useProfile();
+    useFocusEffect(
+        useCallback(() => {
+        async function loadProfile() {
+            try {
+                const token = await AsyncStorage.getItem('user_login_token')
+                console.log('TOKEN:', token)
+                const response = await axios.get('http://145.24.223.94/api/user', {
+                    headers: {
+                        'X-user-login-token': token,
+                        'X-with': 'profileImage',
+                        'Authorization': 'Bearer g360GNGOWNvaZ3rNM4YayTHnsV5ntsxVAPn8otxmdb1d2ed8',
+                    },
+                })
+
+                const userData = response.data.userData
+                setDisplayName(userData.name)
+                setUserId(userData.id)
+                console.log(userData)
+                //
+                //
+                if (userData.profile_image?.file_path) {
+                    setProfileImage({ uri: userData.profile_image.file_path });
+                }
+                //
+                //
+            } catch (error) {
+                console.error('Fout bij ophalen profiel:', error)
+            }
+        }
+
+            loadProfile()
+        }, [])
+    )
 
     const handleLogout = async () => {
-        await AsyncStorage.removeItem('user_login_token');
+        await AsyncStorage.removeItem('user_login_token')
         navigation.reset({
             index: 0,
             routes: [{ name: 'Login' }],
-        });
-    };
+        })
+    }
 
 
     return (
@@ -27,23 +65,26 @@ export default function Profile({navigation}) {
                 <View style={styles.top}>
                     <View>
                         <Pressable onPress={() => navigation.goBack()}>
-                            <Ionicons name="arrow-back" size={50} style={styles.icon}/>
+                            <Ionicons name="arrow-back" size={50} style={styles.icon} />
                         </Pressable>
                     </View>
                     <View>
                         <Pressable onPress={() => navigation.navigate('Home')}>
-                            <Ionicons name="close" size={50} style={styles.icon}/>
+                            <Ionicons name="close" size={50} style={styles.icon} />
                         </Pressable>
                     </View>
                 </View>
                 <View style={styles.profileContainer}>
-                    <Image source={profileImage} style={styles.profileImage}/>
+                    <Image
+                        source={profileImage ? profileImage : require('../assets/gray.jpg')}
+                        style={styles.profileImage}
+                    />
                 </View>
 
                 <View style={styles.nameLine}>
                     <Text style={styles.name}>{displayName}</Text>
                     <Pressable onPress={() => navigation.navigate('ProfileEdit')}>
-                        <Ionicons name="pencil" size={32} style={styles.icon}/>
+                        <Ionicons name="pencil" size={32} style={styles.icon} />
                     </Pressable>
                 </View>
 
@@ -51,23 +92,23 @@ export default function Profile({navigation}) {
                     <Pressable onPress={() => navigation.navigate('ProgressList')}>
                         <LinearGradient
                             colors={['#3F5023', '#A8D363']}
-                            start={{x: 0, y: 0}}
-                            end={{x: 1, y: 0}}
+                            start={{ x: 0, y: 0 }}
+                            end={{ x: 1, y: 0 }}
                             style={styles.box}
                         >
                             <Text style={styles.title}>Voortgang</Text>
-                            <Ionicons name="bar-chart" size={50} style={styles.boxIcon}/>
+                            <Ionicons name="bar-chart" size={50} style={styles.boxIcon} />
                         </LinearGradient>
                     </Pressable>
                     <Pressable onPress={() => navigation.navigate('TrophiesList')}>
                         <LinearGradient
                             colors={['#3F5023', '#A8D363']}
-                            start={{x: 0, y: 0}}
-                            end={{x: 1, y: 0}}
+                            start={{ x: 0, y: 0 }}
+                            end={{ x: 1, y: 0 }}
                             style={styles.box}
                         >
                             <Text style={styles.title}>Trofeeën</Text>
-                            <Ionicons name="trophy" size={50} style={styles.boxIcon}/>
+                            <Ionicons name="trophy" size={50} style={styles.boxIcon} />
                         </LinearGradient>
                     </Pressable>
 
