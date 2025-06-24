@@ -6,6 +6,7 @@ import {Ionicons} from "@expo/vector-icons";
 import UserList from '../Components/ScreenComponents/UserList.jsx';
 import React, {useEffect, useState} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {useFocusEffect} from "@react-navigation/native";
 
 const User_Token = 'user_login_token'
 
@@ -55,6 +56,11 @@ export default function SocialTab({navigation}) {
     useEffect(() => {
         getUserToken()
     }, []);
+    useFocusEffect(
+        React.useCallback(() => {
+            getUserToken()
+        }, [])
+    )
 
     if (loading) {
         return <ActivityIndicator size="large" style={styles.loader}/>;
