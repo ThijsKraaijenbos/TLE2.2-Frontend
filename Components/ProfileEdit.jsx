@@ -4,31 +4,49 @@ import {useProfile} from './ScreenComponents/ProfileContext'
 import {Ionicons} from "@expo/vector-icons"
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import axios from 'axios'
-import { useFocusEffect } from '@react-navigation/native'
-import { useCallback } from 'react'
+import {useFocusEffect} from '@react-navigation/native'
+import {useCallback} from 'react'
 
 
 export default function ProfileEdit({navigation}) {
-    const { profileImage, setProfileImage, displayName, setDisplayName } = useProfile()
+    const {profileImage, setProfileImage, displayName, setDisplayName} = useProfile()
     const [name, setName] = useState(displayName)
     const [selectedImageId, setSelectedImageId] = useState(null)
-    const [tempImage, setTempImage] = useState(profileImage)
-    const { userId } = useProfile()
+    const [profileImages, setProfileImages] = useState([])
+    const {userId} = useProfile()
+    const [tempImage, setTempImage] = useState(
+        typeof profileImage === 'string' ? { uri: profileImage } : profileImage
+    )
 
-    
-
-    const profileImages = [
-        {id: 1, src: require('../assets/gray.jpg')},
-        {id: 2, src: require('../assets/fruitbackground.png')},
-        {id: 3, src: require('../assets/man.jpg')},
-        {id: 4, src: require('../assets/banana.jpg')},
-    ]
-
+    // const profileImages = [
+    //     {id: 1, src: require('../assets/gray.jpg')},
+    //     {id: 2, src: require('../assets/fruitbackground.png')},
+    //     {id: 3, src: require('../assets/man.jpg')},
+    //     {id: 4, src: require('../assets/banana.jpg')},
+    // ]
     useFocusEffect(
         useCallback(() => {
-        setTempImage(profileImage)
-        setName(displayName)
-        setSelectedImageId(null)
+            setTempImage(typeof profileImage === 'string' ? { uri: profileImage } : profileImage)
+            setName(displayName)
+            setSelectedImageId(null)
+
+            async function fetchProfileImages() {
+                try {
+                    const token = await AsyncStorage.getItem('user_login_token')
+                    const response = await axios.get(`http://145.24.223.94/api/profile-images`, {
+                        headers: {
+                            'X-user-login-token': token,
+                            'Authorization': 'Bearer g360GNGOWNvaZ3rNM4YayTHnsV5ntsxVAPn8otxmdb1d2ed8',
+                            'Content-Type': 'application/json',
+                        }
+                    })
+                    setProfileImages(Array.isArray(response.data.images) ? response.data.images : [])
+                    console.log('profile images response:', response.data)
+                } catch (error) {
+                    console.error('Fout bij ophalen profielfoto\'s:', error)
+                }
+            }
+            fetchProfileImages()
         }, [profileImage, displayName])
     )
 
@@ -67,20 +85,22 @@ export default function ProfileEdit({navigation}) {
 
                 <Text style={styles.label}>Kies een profielfoto</Text>
                 <View style={styles.imageSelector}>
-                    {profileImages.map((img, index) => (
+                    {Array.isArray(profileImages) ? profileImages.map(img => (
                         <Pressable key={img.id} onPress={() => {
-                            setTempImage(img.src)
+                            setTempImage({ uri: img.file_path })
                             setSelectedImageId(img.id)
                         }}>
                             <Image
-                                source={img.src}
+                                source={{ uri: img.file_path }}
                                 style={[
                                     styles.profileOption,
                                     selectedImageId === img.id && styles.selectedProfile
                                 ]}
                             />
                         </Pressable>
-                    ))}
+                    )) : (
+                        <Text>Geen profielfoto's gevonden</Text>
+                    )}
                 </View>
 
                 <Pressable style={styles.saveButton} onPress={async () => {
