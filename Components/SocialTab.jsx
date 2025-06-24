@@ -5,34 +5,95 @@ import SettingsIcon from "./ScreenComponents/SettingsIcon";
 import {Ionicons} from "@expo/vector-icons";
 import UserList from '../Components/ScreenComponents/UserList.jsx';
 import React, {useEffect, useState} from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const User_Token = 'user_login_token'
+
 
 export default function SocialTab({navigation}) {
-    const [users, setUsers] = useState([]);
+    const [friends, setFriends] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [friendsCode, setFriendsCode] = useState()
-    const handleInvite = () => {
+    const [userAuth, setUserAuth] = useState('');
+    const [friendsMail, setFriendsMail] = useState('')
+    const getUserToken = async () => {
+        try {
+            const userAuthToken = await AsyncStorage.getItem(User_Token)
+            if (userAuthToken) {
+                setUserAuth(userAuthToken)
+                fetchFriends(userAuthToken)
+            }
+        } catch (e) {
+            console.log("Er gaat iets fout met het ophalen van de gebruikersinformatie", e)
+        }
+
     }
 
-    useEffect(() => {
-        const fetchFriends = async () => {
-            try {
-                // Vervang dit met je echte API-call
-                const response = await fetch('https://jouw-api-endpoint.com/users');
-                const data = await response.json();
-                setUsers(data);
-            } catch (error) {
-                console.error('Fout bij ophalen gebruikers:', error);
-            } finally {
-                setLoading(false);
+    const fetchFriends = async (token) => {
+        try {
+            const response = await fetch('http://145.24.223.94/api/friends',
+                {
+                    method: "GET",
+                    headers: {
+                        'Accept': 'application/json',
+                        'Authorization': 'Bearer g360GNGOWNvaZ3rNM4YayTHnsV5ntsxVAPn8otxmdb1d2ed8',
+                        'X-user-login-token': token
+                    }
+                }
+            );
+            const data = await response.json();
+            console.log(data)
+            if (response.ok) {
+                setFriends(data?.friends)
+            } else {
+                alert("er gaat iets niet goed met het verwerken van jouw vrienden")
             }
-        };
-
-        fetchFriends();
+        } catch (error) {
+            console.error('Fout bij ophalen gebruikers:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+    useEffect(() => {
+        getUserToken()
     }, []);
 
     if (loading) {
         return <ActivityIndicator size="large" style={styles.loader}/>;
     }
+
+    const handleInvite = async () => {
+        const email = friendsMail.trim().toLowerCase();
+
+        const alreadyFriend = friends.some(friend => friend.email?.toLowerCase() === email);
+
+        if (alreadyFriend) {
+            alert("Jullie zijn al vrienden");
+            return;
+        }
+        try {
+            const response = await fetch('http://145.24.223.94/api/friends', {
+                method: "POST",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer g360GNGOWNvaZ3rNM4YayTHnsV5ntsxVAPn8otxmdb1d2ed8',
+                    'X-user-login-token': userAuth,
+                },
+                body: JSON.stringify({email: friendsMail.trim()})
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                await fetchFriends(userAuth);
+                setFriendsMail('');
+            } else {
+                alert(data?.message || "Er ging iets mis");
+            }
+        } catch (e) {
+            alert("Er komt niets terug: " + e.message);
+        }
+    };
 
     return (
         <ImageBackground
@@ -49,19 +110,15 @@ export default function SocialTab({navigation}) {
                 <Ionicons name="people" size={100} style={styles.icon}/>
                 <View style={styles.friendCodeSection}>
                     <View style={styles.sectionTitleContainer}>
-                        <Text style={styles.sectionTitle}>Jouw Vriendcode</Text>
-                    </View>
-
-                    <Text style={styles.friendCode}># 1768654351854</Text>
-                    <View style={styles.sectionTitleContainer}>
                         <Text style={styles.sectionTitle}>Vriend uitnodigen</Text>
                     </View>
                     <View style={styles.inviteContainer}>
                         <TextInput
-                            value={friendsCode}
-                            onChangeText={setFriendsCode}
-                            placeholder="#"
+                            value={friendsMail}
+                            onChangeText={setFriendsMail}
+                            placeholder="email"
                             style={styles.input}
+                            keyboardType={"email-address"}
                             placeholderTextColor="#182700"
                         />
                         <Pressable onPress={handleInvite} style={styles.searchButton}>
@@ -74,7 +131,7 @@ export default function SocialTab({navigation}) {
                     <View style={styles.sectionTitleContainer2}>
                         <Text style={styles.sectionTitle}>Jouw Vrienden</Text>
                     </View>
-                    <UserList users={users}/>
+                    <UserList users={friends}/>
                 </View>
             </View>
             <View style={styles.bottomNav}>
@@ -82,6 +139,7 @@ export default function SocialTab({navigation}) {
             </View>
         </ImageBackground>
     );
+
 }
 
 
@@ -151,7 +209,7 @@ const styles = StyleSheet.create({
         height: 40,
         width: 170,
         justifyContent: "center",
-        alignSelf:"center",
+        alignSelf: "center",
     },
     friendCode: {
         fontSize: 20,
@@ -160,7 +218,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(24,39,0,0.53)',
         width: 175,
         marginLeft: 5,
-        marginTop:4,
+        marginTop: 4,
         marginBottom: 4,
         paddingLeft: 3,
         borderRadius: 5,
@@ -183,9 +241,16 @@ const styles = StyleSheet.create({
     },
     searchButton: {
         backgroundColor: '#a8d363',
-        paddingHorizontal: 20,
-        paddingVertical: 10,
+        paddingHorizontal: 24,
+        paddingVertical: 12,
         borderRadius: 10,
+        shadowColor: '#000',
+        shadowOffset: {width: 0, height: 2},
+        shadowOpacity: 0.3,
+        shadowRadius: 3,
+        elevation: 4,
+        borderWidth: 2,
+        borderColor: '#182700',
     },
     searchButtonText: {
         fontSize: 16,
@@ -197,8 +262,9 @@ const styles = StyleSheet.create({
         borderRadius: 12,
         padding: 16,
         flex: 1,
-        maxHeight:320,
-        marginTop:-10,
+        minHeight: 390,
+        maxHeight: 390,
+        marginTop: -10,
     },
     icon: {
         color: '#000929',

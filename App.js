@@ -14,7 +14,7 @@ import Register from "./Components/Register";
 import SocialTab from "./Components/SocialTab";
 import TrophiesList from "./Components/TrophiesList";
 import Settings from "./Components/Settings";
-
+import Explain from "./Components/Explain";
 const Stack = createNativeStackNavigator()
 export default function App() {
 
@@ -23,6 +23,7 @@ export default function App() {
         <NavigationContainer>
             <Stack.Navigator>
                 <Stack.Screen name="Login" component={Login} options={{headerShown: false}}/>
+                <Stack.Screen name="Explain" component={Explain} options={{headerShown: false}}/>
                 <Stack.Screen name="Profile" component={Profile} options={{headerShown: false}}/>
                 <Stack.Screen name="ProfileEdit" component={ProfileEdit} options={{headerShown: false}}/>
                 <Stack.Screen name="ProgressList" component={ProgressList} options={{headerShown: false}}/>

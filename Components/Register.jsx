@@ -22,8 +22,6 @@ export default function Register({navigation}){
         }
         const role = "child"
 
-
-
         try {
             const response = await fetch('http://145.24.223.94/api/register', {
                 method: 'POST',
@@ -38,7 +36,7 @@ export default function Register({navigation}){
             console.log("RESPONSE TEXT:", data);
             if (response.ok) {
                 Alert.alert('Gelukt', 'Registratie voltooid!');
-                navigation.navigate('Login');
+                navigation.navigate('Explain');
             } else {
                 Alert.alert('Fout', data.message || 'Registratie mislukt.');
             }

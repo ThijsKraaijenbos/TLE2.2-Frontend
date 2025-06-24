@@ -1,12 +1,12 @@
-import {ImageBackground, Pressable, StyleSheet, Text, View} from "react-native";
+import {Alert, ImageBackground, Pressable, StyleSheet, Text, View} from "react-native";
 import BottomNavigation from "./ScreenComponents/BottomNavigation";
 import ProfileIcon from "./ScreenComponents/ProfileIcon";
 import SettingsIcon from "./ScreenComponents/SettingsIcon";
-import {useEffect, useState} from "react";
+import {useCallback, useEffect, useState} from "react";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Ionicons} from "@expo/vector-icons";
 import {SafeAreaView} from "react-native-safe-area-context";
-import {useRoute} from "@react-navigation/native";
+import {useFocusEffect, useRoute} from "@react-navigation/native";
 
 const fruitCombinaties = [
     "1 banaan 120g +\n 10 aardbeien 80g = 200g",
@@ -22,143 +22,174 @@ const fruitCombinaties = [
 ];
 const DATA_KEY = 'daily_data';
 const TIMESTAMP_KEY = 'last_updated_time';
-
+const User_Token = 'user_login_token'
+const Daily_Task = 'daily_task_completed'
 
 export default function HomeScreen({navigation}) {
-
-
     const [streak, setStreak] = useState(0)
     const [daylyTask, setDaylyTask] = useState(false)
-    const [userInfo, setUserInfo] = useState([])
     const [suggestion, setSuggestion] = useState('')
     const [bgColor, setBgColor] = useState('rgba(168, 211, 99, 0.8)');
+    const [streakDate, setStreakDate] = useState('')
+    const [userAuth, setUserAuth] = useState('')
 
-    useEffect(() => {
-        const loadStreakData = async () => {
-            try {
-                const lastUpdate = await AsyncStorage.getItem('lastStreakUpdateTime'); // ← hier kun je ook je API response gebruiken
-                const savedStreak = await AsyncStorage.getItem('streak');
+    const getUserToken = async () => {
+        try {
+            const userAuthToken = await AsyncStorage.getItem(User_Token)
+            if (userAuthToken) {
+                setUserAuth(userAuthToken)
+                fetchUserInfo(userAuthToken)
+            } else {
+                console.log("Er is geen userdata")
+            }
+        } catch (e) {
+            console.log("Er gaat iets fout met het ophalen van de gebruikersinformatie", e)
+        }
 
-                if (savedStreak) {
-                    setStreak(parseInt(savedStreak));
+    }
+    const fetchUserInfo = async (token) => {
+        try {
+            const response = await fetch('http://145.24.223.94/api/user', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer g360GNGOWNvaZ3rNM4YayTHnsV5ntsxVAPn8otxmdb1d2ed8',
+                    'X-user-login-token': token,
+                    'X-with': 'streak, profileImage'
                 }
+            })
 
+            const data = await response.json()
+            if (response.ok) {
+                const userData = data.userData || {}
+                const streaks = userData.streak || {}
+                const currentStreak = streaks.current_streak
+                const lastCompleted = streaks?.last_completed_date
 
-                const now = new Date();
-                if (lastUpdate) {
-                    const lastDate = new Date(lastUpdate);
+                if (currentStreak != null && lastCompleted) {
+                    setStreak(currentStreak)
+                    setStreakDate(lastCompleted)
 
-                    const isDifferentDay =
-                        lastDate.getFullYear() !== now.getFullYear() ||
-                        lastDate.getMonth() !== now.getMonth() ||
-                        lastDate.getDate() !== now.getDate();
-
-                    if (isDifferentDay) {
-                        setDaylyTask(false);
-                    } else {
+                    const now = new Date();
+                    const formattedDate = `${String(now.getDate()).padStart(2, '0')}-${String(now.getMonth() + 1).padStart(2, '0')}-${now.getFullYear()}`;
+                    if (lastCompleted === formattedDate) {
                         setDaylyTask(true);
+                    } else {
+                        setDaylyTask(false);
                     }
                 } else {
-                    setDaylyTask(false);
+                    setStreak(0)
+                    setDaylyTask(false)
                 }
-            } catch (error) {
-                console.error('Fout bij laden streak data:', error);
+
+            } else {
+                Alert.alert('Fout bij ophalen', data.message || 'Gebruikersinformatie kon niet worden geladen.')
             }
-        };
+        } catch (error) {
+            console.error('Fout bij ophalen van gebruikersdata:', error)
+            Alert.alert('Verbindingsfout', 'Er is een probleem opgetreden tijdens het ophalen van gegevens.')
+        }
+    }
 
-        loadStreakData();
-    }, []);
+    const checkAndUpdateInfo = async () => {
+        try {
+            const savedTime = await AsyncStorage.getItem(TIMESTAMP_KEY);
+            const savedSuggestion = await AsyncStorage.getItem(DATA_KEY);
+            const now = new Date();
 
+            if (savedTime) {
+                const savedDate = new Date(parseInt(savedTime, 10));
+
+                const isDifferentDay =
+                    savedDate.getFullYear() !== now.getFullYear() ||
+                    savedDate.getMonth() !== now.getMonth() ||
+                    savedDate.getDate() !== now.getDate();
+
+                if (isDifferentDay) {
+                    const newSuggestion = getRandomItem();
+                    await AsyncStorage.setItem(DATA_KEY, newSuggestion);
+                    await AsyncStorage.setItem(TIMESTAMP_KEY, now.getTime().toString());
+                    setSuggestion(newSuggestion);
+                } else {
+                    setSuggestion(savedSuggestion || 'Geen informatie gevonden');
+                }
+            } else {
+                const newInfo = getRandomItem();
+                await AsyncStorage.setItem(DATA_KEY, newInfo);
+                await AsyncStorage.setItem(TIMESTAMP_KEY, now.getTime().toString());
+                setSuggestion(newInfo);
+            }
+        } catch (error) {
+            console.error('Fout bij ophalen data:', error);
+        }
+    };
+
+    useEffect(() => {
+        getUserToken()
+        checkAndUpdateInfo();
+    }, [])
+    useFocusEffect(
+        useCallback(() => {
+            getUserToken();
+            checkAndUpdateInfo();
+        }, [])
+    );
 
     const getRandomItem = () => {
         const index = Math.floor(Math.random() * fruitCombinaties.length);
         return fruitCombinaties[index];
     };
 
-    useEffect(() => {
-        const checkAndUpdateInfo = async () => {
-            try {
-                const savedTime = await AsyncStorage.getItem(TIMESTAMP_KEY);
-                const savedSuggestion = await AsyncStorage.getItem(DATA_KEY);
-                const now = new Date();
 
-                if (savedTime) {
-                    const savedDate = new Date(parseInt(savedTime, 10));
-
-                    const isDifferentDay =
-                        savedDate.getFullYear() !== now.getFullYear() ||
-                        savedDate.getMonth() !== now.getMonth() ||
-                        savedDate.getDate() !== now.getDate();
-
-                    if (isDifferentDay) {
-                        const newSuggestion = getRandomItem();
-                        await AsyncStorage.setItem(DATA_KEY, newSuggestion);
-                        await AsyncStorage.setItem(TIMESTAMP_KEY, now.getTime().toString());
-                        setSuggestion(newSuggestion);
-                    } else {
-                        setSuggestion(savedSuggestion || 'Geen informatie gevonden');
-                    }
-                } else {
-                    const newInfo = getRandomItem();
-                    await AsyncStorage.setItem(DATA_KEY, newInfo);
-                    await AsyncStorage.setItem(TIMESTAMP_KEY, now.getTime().toString());
-                    setSuggestion(newInfo);
-                }
-            } catch (error) {
-                console.error('Fout bij ophalen data:', error);
-            }
-        };
-
-        checkAndUpdateInfo();
-    }, []);
-
-
-    useEffect(() => {
-        const loadUser = async () => {
-            const savedUser = await AsyncStorage.getItem('user');
-            if (savedUser) setUserInfo(JSON.parse(savedUser));
-        };
-        loadUser();
-    }, []);
-
-    useEffect(() => {
-        async function streakInformation() {
-            try {
-                const response = await fetch(`${userInfo.id}`, {
-                    method: "GET",
-                    headers: {
-                        'Accept': 'application/json'
-                    }
+    const updateStreak = async () => {
+        try {
+            console.log(userAuth)
+            const today = new Date();
+            const formattedDate = `${String(today.getDate()).padStart(2, '0')}-${String(today.getMonth() + 1).padStart(2, '0')}-${today.getFullYear()}`;
+            console.log(formattedDate)
+            const response = await fetch('http://145.24.223.94/api/updateStreak', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer g360GNGOWNvaZ3rNM4YayTHnsV5ntsxVAPn8otxmdb1d2ed8',
+                    'X-user-login-token': userAuth,
+                },
+                body: JSON.stringify({
+                    date: formattedDate
                 })
-
-                const data = await response.json()
-                setStreak(data)
-            } catch (e) {
-                console.log('Er gaat iets fout' + e)
+            })
+            const data = await response.json();
+            if (response.ok) {
+                await AsyncStorage.setItem(Daily_Task, JSON.stringify(true));
+                setDaylyTask(true);
+                if (!daylyTask) {
+                    console.log(daylyTask)
+                    navigation.navigate('FruitList');
+                }
+            } else {
+                console.log("foutresponse" + data)
+                alert("Opslaan van de streak is mislukt: " + data);
             }
+
+        } catch (e) {
+            console.log("Er gaat iets fout met het updaten van de streak", e);
         }
-        streakInformation()
-    }, []);
+    }
 
-    const handleYesPressed = async () => {
+    const handleYesPressed = () => {
         if (daylyTask === false) {
-            const newStreak = streak + 1;
-            setStreak(newStreak);
             setDaylyTask(true);
-
-            const now = new Date().getTime();
-            await AsyncStorage.setItem('streak', newStreak.toString());
-            await AsyncStorage.setItem('lastStreakUpdateTime', now.toString());
+            updateStreak()
         } else {
             alert("Ho even, Probeer jij vals te spelen?\nJe mag maar 1 keer per dag op Ja drukken.");
         }
     };
 
     const handleNeePressed = () => {
-        if(daylyTask === true){
+        if (daylyTask === true) {
             alert("jij hebt vandaag al goed je fruit op heb je ingevuld!");
         } else {
-            setBgColor('#fd9a90'); // update achtergrondkleur naar roodachtig
+            setBgColor('#fd9a90');
         }
     };
 
@@ -168,17 +199,14 @@ export default function HomeScreen({navigation}) {
             style={styles.background}
             resizeMode="cover"
         >
-            <View style={styles.overlay} />
-
-            <SettingsIcon navigation={navigation} style={styles.settingsIcon} />
-            <ProfileIcon navigation={navigation} style={styles.profileIcon} />
-
+            <View style={styles.overlay}/>
+            <SettingsIcon navigation={navigation} style={styles.settingsIcon}/>
+            <ProfileIcon navigation={navigation} style={styles.profileIcon}/>
             <View style={styles.headerContainer}>
                 <ImageBackground source={require('../assets/dragon-fruit (2).png')} style={styles.streakBackground}>
                     <Text style={styles.streakText}>{streak}</Text>
                 </ImageBackground>
             </View>
-
             <View style={styles.questionContainer}>
                 <Text style={styles.questionText}>Heb jij vandaag al</Text>
                 <View style={styles.amountContainer}>
@@ -186,29 +214,30 @@ export default function HomeScreen({navigation}) {
                 </View>
                 <Text style={styles.questionText}>fruit gegeten?</Text>
             </View>
-
             <View style={styles.buttonsContainer}>
-                <Pressable style={styles.buttonYes} onPress={handleYesPressed}>
+                <Pressable
+                    style={[styles.buttonYes, daylyTask && {opacity: 0.5}]}
+                    onPress={handleYesPressed}
+                    disabled={daylyTask}
+                >
                     <Text style={styles.buttonText}>JA!</Text>
                 </Pressable>
                 <Pressable style={styles.buttonNo} onPress={handleNeePressed}>
                     <Text style={styles.buttonText}>Nee?</Text>
                 </Pressable>
             </View>
-
-            <View style={[styles.suggestionContainer, { backgroundColor: bgColor }]}>
+            <View style={[styles.suggestionContainer, {backgroundColor: bgColor}]}>
                 <Text style={styles.suggestionTitle}>Suggestie van vandaag:</Text>
                 <Text style={styles.suggestionText}>{suggestion}</Text>
 
                 <View style={styles.shareContainer}>
                     <Text style={styles.shareText}>Deze suggestie delen?</Text>
                     <Pressable>
-                        <Ionicons name="arrow-forward" size={32} style={styles.icon} />
+                        <Ionicons name="arrow-forward" size={32} style={styles.icon}/>
                     </Pressable>
                 </View>
             </View>
-
-            <BottomNavigation navigation={navigation} />
+            <BottomNavigation navigation={navigation}/>
         </ImageBackground>
     );
 
