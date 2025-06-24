@@ -30,7 +30,6 @@ export default function FruitDetails({ navigation, route }) {
             const userAuthToken = await AsyncStorage.getItem(User_Token)
             if (userAuthToken) {
                 setUserAuth(userAuthToken)
-                console.log(userAuthToken)
             } else {
                 console.log("Er is geen userdata")
             }
@@ -101,7 +100,7 @@ export default function FruitDetails({ navigation, route }) {
     useFocusEffect(
         React.useCallback(() => {
             if(userAuth){
-                LoadFruits();
+                LoadFruit();
             }
         }, [userAuth])
     )
@@ -139,7 +138,7 @@ export default function FruitDetails({ navigation, route }) {
 
                 {/* Fruit Name */}
                 <Text style={styles.fruitName}>
-                    {Fruitdata.has_eaten_before ? '✔️ ' : ''}{Fruitdata.name}
+                    {hasEaten ? '✔️ ' : ''}{Fruitdata.name}
                 </Text>
 
                 {/* Description */}

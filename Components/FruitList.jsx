@@ -41,24 +41,11 @@ export default function FruitList({navigation}) {
         }
     }
 
-    useFocusEffect(
-        React.useCallback(() => {
-            getUserToken();
-        }, [])
-    )
 
-    useFocusEffect(
-        React.useCallback(() => {
-            if(userAuth){
-                LoadFruits();
-            }
-        }, [userAuth])
-    )
 
 
     const LoadFruits = async () => {
         try {
-            console.log(userAuth);
             const response = await fetch('http://145.24.223.94/api/fruits', {
                 method: 'GET',
                 headers: {
@@ -73,7 +60,11 @@ export default function FruitList({navigation}) {
 
             if (response.ok) {
                 setFruitdata(data.data);
-                setDropdownItems(data.data.map(item => ({label: item.name, value: item.name})));
+                setDropdownItems(
+                    data.data
+                        .filter(item => item.user_preference?.has_eaten_before == false)
+                        .map(item => ({label: item.name, value: item.name}))
+                );
             } else {
                 Alert.alert('Fout', data.message || 'Fruit ophalen mislukt.');
             }
@@ -87,7 +78,7 @@ export default function FruitList({navigation}) {
         const fruit = fruitdata.find(f => f.name === fruitName);
         if (!fruit) return;
 
-        const updatedEaten = !fruit.has_eaten_before;
+        const updatedEaten = !fruit.user_preference.has_eaten_before;
 
         try {
             const response = await fetch(`http://145.24.223.94/api/fruits/${fruit.id}/togglePreference`, {
@@ -95,6 +86,7 @@ export default function FruitList({navigation}) {
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': 'Bearer g360GNGOWNvaZ3rNM4YayTHnsV5ntsxVAPn8otxmdb1d2ed8',
+                    'X-user-login-token' :  userAuth,
                 },
                 body: JSON.stringify({has_eaten_before: updatedEaten}),
             });
@@ -107,7 +99,7 @@ export default function FruitList({navigation}) {
             setFruitdata(prev =>
                 prev.map(f =>
                     f.name === fruitName
-                        ? {...f, like: updatedLike}
+                        ? {...f, has_eaten_before: updatedEaten}
                         : f
                 )
             );
@@ -134,6 +126,20 @@ export default function FruitList({navigation}) {
         }
     }
 
+    useFocusEffect(
+        React.useCallback(() => {
+            getUserToken();
+        }, [])
+    )
+
+    useFocusEffect(
+        React.useCallback(() => {
+            if(userAuth){
+                LoadFruits();
+            }
+        }, [userAuth, dropdownItems])
+    )
+
     return (
         <ImageBackground
             source={require('../assets/fruitbackground.png')}
@@ -147,7 +153,7 @@ export default function FruitList({navigation}) {
 
                 <View style={styles.headerContainer}>
                     {/*<Text style={styles.infoIcon}></Text>*/}
-                    <Text style={styles.infoText}>De groote fruitmarkt</Text>
+                    <Text style={styles.infoText}>De grote fruitmarkt</Text>
                 </View>
 
                 <View style={styles.searchContainer}>
@@ -192,22 +198,31 @@ export default function FruitList({navigation}) {
                     style={styles.flatList}
                     renderItem={({item}) => (
                         <TouchableOpacity
+                            activeOpacity={1}
                             onPress={() => navigation.navigate('FruitDetails', {id: item.id})}
                             style={[
                                 styles.fruitItem,
                                 {
-                                    backgroundColor: Backgroundcolor(item.user_preference.like),
-                                    borderColor: borderColor(item.user_preference.like),
+                                    backgroundColor: Backgroundcolor(item.user_preference?.like),
+                                    borderColor: borderColor(item.user_preference?.like),
                                     borderWidth: 3,
                                 }
                             ]}
                         >
-                            <Text> {item.user_preference.like}</Text>
-                            <Image source={item.image} style={styles.fruitImage}/>
-                            {item.has_eaten_before && <Text style={styles.checkmark}>✔️</Text>}
-                            <Text style={styles.fruitName}>{item.name}</Text>
+                            <Image
+                                source={
+                                    typeof item.image === 'string'
+                                        ? { uri: item.image }
+                                        : item.image
+                                }
+                                style={styles.fruitImage}
+                            />
+                            <Text style={styles.fruitName}>
+                                {item.user_preference.has_eaten_before ? '✔️ ' : ''}{item.name}
+                            </Text>
                         </TouchableOpacity>
                     )}
+
 
                 />
 
