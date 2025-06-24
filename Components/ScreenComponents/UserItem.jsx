@@ -5,7 +5,7 @@ const UserItem = ({ user }) => {
     return (
         <View style={styles.card}>
             <Text style={styles.name}>{user.name}</Text>
-            <Text style={styles.info}>Streak: {user.streak}</Text>
+            <Text style={styles.info}>Streak: {user.streak?.current_streak}</Text>
             <Text style={styles.info}>Email: {user.email}</Text>
         </View>
     );

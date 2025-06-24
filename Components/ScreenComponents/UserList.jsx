@@ -3,7 +3,7 @@ import { FlatList, Text, StyleSheet } from 'react-native';
 import UserItem from './UserItem';
 
 const UserList = ({ users }) => {
-    const sortedUsers = [...users].sort((a, b) => b.streak - a.streak);
+    const sortedUsers = [...users].sort((a, b) => b.streak.current_streak - a.streak.current_streak);
 
     return (
         <FlatList
@@ -24,8 +24,8 @@ const styles = StyleSheet.create({
         backgroundColor: '#EAFCD2',
         marginTop:5,
         borderRadius: 8,
-        minHeight:244,
-        maxHeight:244,
+        minHeight:310,
+        maxHeight:310,
     },
     emptyText: {
         textAlign: 'center',

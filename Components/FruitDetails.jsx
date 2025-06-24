@@ -1,19 +1,28 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {
     Text,
     View,
     Image,
     StyleSheet,
-    ImageBackground
+    ImageBackground,
+    Switch,
+    TouchableOpacity
 } from 'react-native';
 import SettingsIcon from './ScreenComponents/SettingsIcon';
 import ProfileIcon from './ScreenComponents/ProfileIcon';
 import BottomNavigation from "./ScreenComponents/BottomNavigation";
 
+
+
 export default function FruitDetails({ navigation }) {
+    const [isLekker, setIsLekker] = useState(false);
+
+
+
+
     return (
         <ImageBackground
-            source={require('../assets/il_fullxfull.png')} // Change path to your background
+            source={require('../assets/il_fullxfull.png')}
             style={styles.background}
             imageStyle={styles.imageStyle}
         >
@@ -22,10 +31,18 @@ export default function FruitDetails({ navigation }) {
                 <SettingsIcon navigation={navigation} style={styles.settingsIcon} />
                 <ProfileIcon navigation={navigation} style={styles.profileIcon} />
 
-                {/* "Niet Lekker" badge */}
-                <View style={styles.badge}>
-                    <Text style={styles.badgeText}>niet lekker</Text>
-                </View>
+                {/* Lekker / Niet Lekker Switch */}
+
+                <TouchableOpacity
+                    onPress={() => setIsLekker(!isLekker)}
+                    style={[
+                        styles.switchRow,
+                        { backgroundColor: isLekker ? '#A8D363' : '#f7b2a4' }
+                    ]}
+                    activeOpacity={0.8}
+                >
+                    <Text style={styles.switchLabel}>{isLekker ? 'lekker' : 'niet lekker'}</Text>
+                </TouchableOpacity>
 
                 {/* Fruit Image */}
                 <Image
@@ -88,6 +105,23 @@ const styles = StyleSheet.create({
         position: 'absolute',
         top: 10,
         right: 10,
+    },
+    switchRow: {
+        justifyContent: 'center',     // center horizontally
+        alignItems: 'center',         // center vertically
+        borderRadius: 6,
+        paddingHorizontal: 12,
+        paddingVertical: 6,
+        marginTop: 50,
+        minHeight: 48,
+        minWidth: 100,
+        backgroundColor: '#f7b2a4',   // fallback default
+    },
+
+    switchLabel: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: '#222',
     },
     badge: {
         backgroundColor: '#f7b2a4',
