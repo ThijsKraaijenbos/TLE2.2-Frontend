@@ -1,7 +1,6 @@
 import {Alert, Animated, Easing, Image, ImageBackground, Pressable, Share, StyleSheet, Text, View} from "react-native";
 import BottomNavigation from "./ScreenComponents/BottomNavigation";
 import ProfileIcon from "./ScreenComponents/ProfileIcon";
-import SettingsIcon from "./ScreenComponents/SettingsIcon";
 import {useCallback, useEffect, useRef, useState} from "react";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Ionicons} from "@expo/vector-icons";
@@ -67,10 +66,27 @@ export default function HomeScreen({navigation}) {
                 const lastCompleted = streaks?.last_completed_date
 
                 if (currentStreak != null && lastCompleted) {
-                    setStreak(currentStreak)
-                    setStreakDate(lastCompleted)
-
                     const now = new Date();
+
+                    const [day, month, year] = lastCompleted.split('-').map(Number);
+                    const lastDate = new Date(year, month - 1, day);
+
+                    lastDate.setHours(0, 0, 0, 0);
+                    now.setHours(0, 0, 0, 0);
+
+                    const diffTime = now - lastDate;
+                    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+                    if (diffDays > 1) {
+                        const reset = true
+                        await updateStreak(reset)
+                        setDailyTask(false);
+                        return;
+                    }
+
+                    setStreak(currentStreak);
+                    setStreakDate(lastCompleted);
+
                     const formattedDate = `${String(now.getDate()).padStart(2, '0')}-${String(now.getMonth() + 1).padStart(2, '0')}-${now.getFullYear()}`;
                     if (lastCompleted === formattedDate) {
                         setDailyTask(true);
@@ -81,7 +97,6 @@ export default function HomeScreen({navigation}) {
                     setStreak(0)
                     setDailyTask(false)
                 }
-
             } else {
                 Toast.show({
                     type: 'error',
@@ -148,12 +163,12 @@ export default function HomeScreen({navigation}) {
         return fruitCombinaties[index];
     };
 
-    const updateStreak = async () => {
-         try {
-             const today = new Date();
-             const formattedDate = `${String(today.getDate()).padStart(2, '0')}-${String(today.getMonth() + 1).padStart(2, '0')}-${today.getFullYear()}`;
+    const updateStreak = async (reset) => {
+        try {
+            const today = new Date();
+            const formattedDate = `${String(today.getDate()).padStart(2, '0')}-${String(today.getMonth() + 1).padStart(2, '0')}-${today.getFullYear()}`;
 
-             const response = await fetch('http://145.24.223.94/api/updateStreak', {
+            const response = await fetch('http://145.24.223.94/api/updateStreak', {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -161,6 +176,7 @@ export default function HomeScreen({navigation}) {
                     'X-user-login-token': userAuth,
                 },
                 body: JSON.stringify({
+                    reset: reset,
                     date: formattedDate
                 })
             })
@@ -205,7 +221,8 @@ export default function HomeScreen({navigation}) {
     const handleYesPressed = () => {
         if (dailyTask === false) {
             setDailyTask(true);
-            updateStreak()
+            const reset = false
+            updateStreak(reset)
         } else {
             Toast.show({
                 type: 'info',
