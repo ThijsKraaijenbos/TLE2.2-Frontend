@@ -63,7 +63,7 @@ export default function FruitList({navigation}) {
                 setDropdownItems(
                     data.data
                         .filter(item => item.user_preference?.has_eaten_before == false)
-                        .map(item => ({label: item.name, value: item.name}))
+                        .map(item => ({label: item.name, value: item.id}))
                 );
             } else {
                 Alert.alert('Fout', data.message || 'Fruit ophalen mislukt.');
@@ -73,19 +73,20 @@ export default function FruitList({navigation}) {
         }
     };
 
-    const toggleFruitStatus = async (fruitName) => {
+    const toggleFruitStatus = async (fruitid) => {
 
-        const fruit = fruitdata.find(f => f.name === fruitName);
+        const fruit = fruitdata.find(f => f.id === fruitid);
         if (!fruit) return;
 
         const updatedEaten = !fruit.user_preference.has_eaten_before;
 
         try {
-            const response = await fetch(`http://145.24.223.94/api/fruits/${fruit.id}/togglePreference`, {
+            const response = await fetch(`http://145.24.223.94/api/fruits/${fruitid}/togglePreference`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': 'Bearer g360GNGOWNvaZ3rNM4YayTHnsV5ntsxVAPn8otxmdb1d2ed8',
+                    'accept': 'application/json',
                     'X-user-login-token' :  userAuth,
                 },
                 body: JSON.stringify({has_eaten_before: updatedEaten}),
@@ -95,10 +96,12 @@ export default function FruitList({navigation}) {
                 throw new Error('Update failed');
             }
 
+
+
             // Locally update the state after a successful update
             setFruitdata(prev =>
                 prev.map(f =>
-                    f.name === fruitName
+                    f.id === fruitid
                         ? {...f, has_eaten_before: updatedEaten}
                         : f
                 )
@@ -137,7 +140,7 @@ export default function FruitList({navigation}) {
             if(userAuth){
                 LoadFruits();
             }
-        }, [userAuth, dropdownItems])
+        }, [userAuth,])
     )
 
     return (
@@ -173,13 +176,11 @@ export default function FruitList({navigation}) {
                         value={selectedFruit}
                         items={dropdownItems}
                         setOpen={setOpen}
-                        setValue={(callback) => {
-                            const selected = callback(selectedFruit);
+                        setValue={(selected) => {
                             toggleFruitStatus(selected);
-                            setSelectedFruit(null); // reset selectie na togglen
+                            setSelectedFruit(null); // optional
                         }}
-                        setItems={() => {
-                        }}
+                        setItems={() => {}}
                         placeholder="Heb je een nieuw iets op? vink hem aan!"
                         searchable={true}
                         searchPlaceholder="Zoek fruit..."
@@ -202,6 +203,7 @@ export default function FruitList({navigation}) {
                             style={[
                                 styles.fruitItem,
                                 {
+
                                     backgroundColor: Backgroundcolor(item.user_preference?.like),
                                     borderColor: borderColor(item.user_preference?.like),
                                     borderWidth: 3,
@@ -216,9 +218,9 @@ export default function FruitList({navigation}) {
                                 }
                                 style={styles.fruitImage}
                             />
-                            <Text style={styles.fruitName}>
-                                {item.user_preference.has_eaten_before ? '✔️ ' : ''}{item.name}
-                            </Text>
+                                <Text style={styles.fruitName}>
+                                    {(item.user_preference?.has_eaten_before ? '✔️ ' : '') + item.name}
+                                </Text>
                         </TouchableOpacity>
                     )}
 
