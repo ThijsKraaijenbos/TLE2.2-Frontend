@@ -135,7 +135,7 @@ export default function FruitDetails({ navigation, route }) {
                     ]}
                     activeOpacity={0.8}
                 >
-                    <Text style={styles.switchLabel}>{isLekker ? 'lekker' : 'niet lekker'}</Text>
+                    <Text style={styles.switchLabel}>{isLekker ? 'Lekker' : 'Niet lekker'}</Text>
                 </TouchableOpacity>
 
                 {/* Fruit Image */}
@@ -159,9 +159,9 @@ export default function FruitDetails({ navigation, route }) {
                 {/* Details Section */}
                 <View style={styles.detailRow}>
                     <View style={styles.detailBox}>
-                        <Text style={styles.detailText}> dit fruit kan je kopen voor ongeveer €{Fruitdata.price}</Text>
-                        <Text style={styles.detailText}> dit fruit is gemiddeld {Fruitdata.size} cm groot!</Text>
-                        <Text style={styles.detailText}> dit fruit weegt gemiddeld {Fruitdata.weight} gram!</Text>
+                        <Text style={styles.detailText}>• Dit fruit kan je kopen voor ongeveer €{Fruitdata.price}</Text>
+                        <Text style={styles.detailText}>• Dit fruit weegt gemiddeld {Fruitdata.weight} gram!</Text>
+                        <Text style={styles.detailText}>• Uit 1 stuk of tros van dit type fruit haal je gemiddeld {Fruitdata.size} {Fruitdata.size > 1 ? "porties" : "portie"}!</Text>
                     </View>
                     <Image
                         source={{ uri: Fruitdata.small_img_file_path }}
@@ -171,7 +171,7 @@ export default function FruitDetails({ navigation, route }) {
 
                 {/* Fun Fact */}
                 <View style={styles.funFactBox}>
-                    <Text style={styles.funFactText}>fun fact:{"\n"}geen leuke feitjes gevonden</Text>
+                    <Text style={styles.funFactText}>fun fact:{"\n"}er zijn momenteel geen leuke feitjes voor dit fruit.</Text>
                 </View>
             </View>
             <BottomNavigation navigation={navigation}/>

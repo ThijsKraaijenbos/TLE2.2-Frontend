@@ -119,9 +119,9 @@ export default function Login({navigation}) {
                     />
                 </View>
                 <View style={styles.zin}>
-                    <Text style={styles.question}>Nog geen account?</Text>
+                    <Text style={styles.question}>Nog geen account? </Text>
                     <Pressable onPress={() => navigation.navigate('Register')}>
-                        <Text style={styles.linkText}> Registreren</Text>
+                        <Text style={styles.linkText}>Registreren</Text>
                     </Pressable>
                 </View>
                 <View>

@@ -136,7 +136,7 @@ export default function SocialTab({navigation}) {
                         <TextInput
                             value={friendsMail}
                             onChangeText={setFriendsMail}
-                            placeholder="email"
+                            placeholder="Email"
                             style={styles.input}
                             keyboardType={"email-address"}
                             placeholderTextColor="#182700"

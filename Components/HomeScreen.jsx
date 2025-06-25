@@ -9,15 +9,15 @@ import {useFocusEffect, useRoute} from "@react-navigation/native";
 import Toast from "react-native-toast-message";
 
 const fruitCombinaties = [
-    "1 banaan 120g +\n 10 aardbeien 80g = 200g",
-    "1 appel 150g + 1\n kiwi 50g = 200g",
-    "15 druiven 105g +\n 1 sinaasappel 95g = 200g",
-    "1 mango 130g +\n 1 passievrucht 70g = 200g",
-    "1 peer 160g +\n 1 pruim 40g = 200g",
-    "1 plak watermeloen 170g +\n 1 passievrucht 30g = 200g",
-    "1 nectarine 140g +\n 1 handje blauwe bessen 60g = 200g",
-    "10 kersen 100g +\n 10 aardbeien 100g = 200g",
-    "1 appel 150g +\n 1 handje blauwe bessen 50g = 200g",
+    "1 banaan 120g +\n10 aardbeien 80g = 200g",
+    "1 appel 150g + 1\nkiwi 50g = 200g",
+    "15 druiven 105g +\n1 sinaasappel 95g = 200g",
+    "1 mango 130g +\n1 passievrucht 70g = 200g",
+    "1 peer 160g +\n1 pruim 40g = 200g",
+    "1 plak watermeloen 170g +\n1 passievrucht 30g = 200g",
+    "1 nectarine 140g +\n1 handje blauwe bessen 60g = 200g",
+    "10 kersen 100g +\n10 aardbeien 100g = 200g",
+    "1 appel 150g +\n1 handje blauwe bessen 50g = 200g",
     "1 granaatappel 200g = 200g"
 ];
 const DATA_KEY = 'daily_data';

@@ -202,7 +202,7 @@ export default function FruitList({navigation}) {
                         setOpen={setOpen}
                         setValue={setSelectedFruit}
                         setItems={() => {}}
-                        placeholder="Heb je een nieuw iets op? vink hem aan!"
+                        placeholder="Heb je iets nieuws gegeten? Vink het aan!"
                         searchable={true}
                         searchPlaceholder="Zoek fruit..."
                         listMode="MODAL"
