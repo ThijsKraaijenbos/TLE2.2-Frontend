@@ -52,13 +52,10 @@ export default function FruitDetails({ navigation, route }) {
             });
 
             const data = await response.json();
-            console.log(data)
             if (response.ok) {
                     setFruitdata(data.data);
                 setIsLekker(data.data.user_preference.like)
                 sethasEaten(data.data.user_preference.has_eaten_before)
-                console.log(data.data.user_preference.like)
-                console.log('Fruit correct opgehaald');
             } else {
                 Toast.show({
                     type: 'error',
@@ -90,7 +87,6 @@ export default function FruitDetails({ navigation, route }) {
             });
 
             const result = await response.json();
-            console.log("Toggle API response:", result);
 
             if (!response.ok) throw new Error('Update failed');
             setIsLekker(newValue);
@@ -144,7 +140,7 @@ export default function FruitDetails({ navigation, route }) {
 
                 {/* Fruit Image */}
                 <Image
-                    source={require('../assets/icon.png')}
+                    source={{ uri: Fruitdata.big_img_file_path }}
                     style={styles.mainImage}
                 />
 
@@ -168,7 +164,7 @@ export default function FruitDetails({ navigation, route }) {
                         <Text style={styles.detailText}> dit fruit weegt gemiddeld {Fruitdata.weight} gram!</Text>
                     </View>
                     <Image
-                        source={require('../assets/icon.png')}
+                        source={{ uri: Fruitdata.small_img_file_path }}
                         style={styles.detailImage}
                     />
                 </View>

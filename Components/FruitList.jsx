@@ -64,7 +64,7 @@ export default function FruitList({navigation}) {
                 setDropdownItems(
                     data.data
                         .filter(item => item.user_preference?.has_eaten_before == false)
-                        .map(item => ({label: item.name, value: item.name}))
+                        .map(item => ({label: item.name, value: item.id}))
                 );
             } else {
                 Toast.show({
@@ -82,9 +82,9 @@ export default function FruitList({navigation}) {
         }
     };
 
-    const toggleFruitStatus = async (fruitName) => {
+    const toggleFruitStatus = async (fruitname) => {
 
-        const fruit = fruitdata.find(f => f.name === fruitName);
+        const fruit = fruitdata.find(f => f.name === fruitname);
         if (!fruit) return;
 
         const updatedEaten = !fruit.user_preference.has_eaten_before;
@@ -95,6 +95,7 @@ export default function FruitList({navigation}) {
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': 'Bearer g360GNGOWNvaZ3rNM4YayTHnsV5ntsxVAPn8otxmdb1d2ed8',
+                    'accept': 'application/json',
                     'X-user-login-token' :  userAuth,
                 },
                 body: JSON.stringify({has_eaten_before: updatedEaten}),
@@ -103,15 +104,28 @@ export default function FruitList({navigation}) {
             if (!response.ok) {
                 throw new Error('Update failed');
             }
+            const data = await response.json()
+            console.log(data)
+
+
+            await LoadFruits();
 
             // Locally update the state after a successful update
             setFruitdata(prev =>
                 prev.map(f =>
-                    f.name === fruitName
-                        ? {...f, has_eaten_before: updatedEaten}
+                    f.id === fruit.id
+                        ? {
+                            ...f,
+                            user_preference: {
+                                ...f.user_preference,
+                                has_eaten_before: updatedEaten
+                            }
+                        }
                         : f
                 )
             );
+
+
         } catch (error) {
             Toast.show({
                 type: 'error',
@@ -150,7 +164,7 @@ export default function FruitList({navigation}) {
             if(userAuth){
                 LoadFruits();
             }
-        }, [userAuth, dropdownItems])
+        }, [userAuth,])
     )
 
     return (
@@ -186,17 +200,18 @@ export default function FruitList({navigation}) {
                         value={selectedFruit}
                         items={dropdownItems}
                         setOpen={setOpen}
-                        setValue={(callback) => {
-                            const selected = callback(selectedFruit);
-                            toggleFruitStatus(selected);
-                            setSelectedFruit(null); // reset selectie na togglen
-                        }}
-                        setItems={() => {
-                        }}
+                        setValue={setSelectedFruit}
+                        setItems={() => {}}
                         placeholder="Heb je een nieuw iets op? vink hem aan!"
                         searchable={true}
                         searchPlaceholder="Zoek fruit..."
                         listMode="MODAL"
+                        onChangeValue={(value) => {
+                            if (value) {
+                                toggleFruitStatus(dropdownItems.find(f => f.value === value)?.label);
+                                setSelectedFruit(null);
+                            }
+                        }}
                     />
                 </View>
 
@@ -215,6 +230,7 @@ export default function FruitList({navigation}) {
                             style={[
                                 styles.fruitItem,
                                 {
+
                                     backgroundColor: Backgroundcolor(item.user_preference?.like),
                                     borderColor: borderColor(item.user_preference?.like),
                                     borderWidth: 3,
@@ -223,15 +239,15 @@ export default function FruitList({navigation}) {
                         >
                             <Image
                                 source={
-                                    typeof item.image === 'string'
+                                    typeof item.big_img_file_path === 'string'
                                         ? { uri: item.image }
                                         : item.image
                                 }
                                 style={styles.fruitImage}
                             />
-                            <Text style={styles.fruitName}>
-                                {item.user_preference.has_eaten_before ? '✔️ ' : ''}{item.name}
-                            </Text>
+                                <Text style={styles.fruitName}>
+                                    {(item.user_preference?.has_eaten_before ? '✔️ ' : '') + item.name}
+                                </Text>
                         </TouchableOpacity>
                     )}
 
