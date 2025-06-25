@@ -107,8 +107,6 @@ export default function SocialTab({navigation}) {
             resizeMode="cover"
         >
             <View style={styles.overlay}/>
-
-            <SettingsIcon navigation={navigation} style={styles.settingsIcon}/>
             <ProfileIcon navigation={navigation} style={styles.profileIcon}/>
 
             <View style={styles.container}>

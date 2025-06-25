@@ -141,10 +141,11 @@ export default function HomeScreen({navigation}) {
     };
 
     const updateStreak = async () => {
-        try {
-            const today = new Date();
-            const formattedDate = `${String(today.getDate()).padStart(2, '0')}-${String(today.getMonth() + 1).padStart(2, '0')}-${today.getFullYear()}`;
-            const response = await fetch('http://145.24.223.94/api/updateStreak', {
+         try {
+             const today = new Date();
+             const formattedDate = `${String(today.getDate()).padStart(2, '0')}-${String(today.getMonth() + 1).padStart(2, '0')}-${today.getFullYear()}`;
+
+             const response = await fetch('http://145.24.223.94/api/updateStreak', {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -223,7 +224,6 @@ export default function HomeScreen({navigation}) {
             resizeMode="cover"
         >
             <View style={styles.overlay}/>
-            <SettingsIcon navigation={navigation} style={styles.settingsIcon}/>
             <ProfileIcon navigation={navigation} style={styles.profileIcon}/>
             <View style={styles.headerContainer}>
                 <ImageBackground source={require('../assets/dragon-fruit (2).png')} style={styles.streakBackground}>

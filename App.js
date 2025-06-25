@@ -13,7 +13,6 @@ import ProgressList from "./Components/ProgressList";
 import Register from "./Components/Register";
 import SocialTab from "./Components/SocialTab";
 import TrophiesList from "./Components/TrophiesList";
-import Settings from "./Components/Settings";
 import Explain from "./Components/Explain";
 const Stack = createNativeStackNavigator()
 export default function App() {
@@ -31,7 +30,6 @@ export default function App() {
                 <Stack.Screen name="SocialTab" component={SocialTab} options={{headerShown: false}}/>
                 <Stack.Screen name="TrophiesList" component={TrophiesList} options={{headerShown: false}}/>
                 <Stack.Screen name="Home" component={HomeScreen} options={{headerShown: false}}/>
-                <Stack.Screen name="Settings" component={Settings} options={{headerShown: false}}/>
                 <Stack.Screen name="FruitList" component={FruitList} options={{headerShown: false}}/>
                 <Stack.Screen name="FruitDetails" component={FruitDetails} options={{headerShown: false}}/>
             </Stack.Navigator>
