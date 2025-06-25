@@ -115,7 +115,6 @@ export default function FruitDetails({ navigation, route }) {
         >
             <View style={styles.container}>
                 {/* Top Icons */}
-                <SettingsIcon navigation={navigation} style={styles.settingsIcon} />
                 <ProfileIcon navigation={navigation} style={styles.profileIcon} />
 
 

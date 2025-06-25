@@ -148,7 +148,6 @@ export default function FruitList({navigation}) {
         >
             <View style={styles.imageOverlay}/>
             <SafeAreaView style={styles.container}>
-                <SettingsIcon navigation={navigation} style={styles.settingsIcon}/>
                 <ProfileIcon navigation={navigation} style={styles.profileIcon}/>
 
                 <View style={styles.headerContainer}>

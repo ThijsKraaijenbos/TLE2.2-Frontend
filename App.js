@@ -2,7 +2,7 @@ import {StyleSheet} from 'react-native';
 import React from 'react';
 import {createNativeStackNavigator} from "@react-navigation/native-stack";
 import {NavigationContainer} from "@react-navigation/native";
-import {ProfileProvider} from './Components/ScreenComponents/ProfileContext';
+import { ProfileProvider } from './Components/ScreenComponents/ProfileContext';
 import HomeScreen from "./Components/HomeScreen";
 import FruitDetails from "./Components/FruitDetails";
 import FruitList from "./Components/FruitList";
@@ -13,7 +13,6 @@ import ProgressList from "./Components/ProgressList";
 import Register from "./Components/Register";
 import SocialTab from "./Components/SocialTab";
 import TrophiesList from "./Components/TrophiesList";
-import Settings from "./Components/Settings";
 import Explain from "./Components/Explain";
 import Toast from 'react-native-toast-message';
 
