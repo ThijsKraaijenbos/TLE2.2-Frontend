@@ -7,6 +7,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Ionicons} from "@expo/vector-icons";
 import {SafeAreaView} from "react-native-safe-area-context";
 import {useFocusEffect, useRoute} from "@react-navigation/native";
+import Toast from "react-native-toast-message";
 
 const fruitCombinaties = [
     "1 banaan 120g +\n 10 aardbeien 80g = 200g",
@@ -82,11 +83,19 @@ export default function HomeScreen({navigation}) {
                 }
 
             } else {
-                Alert.alert('Fout bij ophalen', data.message || 'Gebruikersinformatie kon niet worden geladen.')
+                Toast.show({
+                    type: 'error',
+                    text1: 'Foutje',
+                    text2: data.message || 'Gebruikersinformatie kon niet worden geladen.',
+                })
             }
         } catch (error) {
             console.error('Fout bij ophalen van gebruikersdata:', error)
-            Alert.alert('Verbindingsfout', 'Er is een probleem opgetreden tijdens het ophalen van gegevens.')
+            Toast.show({
+                type: 'error',
+                text1: 'Verbindingsfout',
+                text2: 'Er is een probleem opgetreden tijdens het ophalen van gegevens.',
+            })
         }
     }
 
@@ -166,7 +175,11 @@ export default function HomeScreen({navigation}) {
                     navigation.navigate('FruitList');
                 }
             } else {
-                alert("Opslaan van de streak is mislukt: " + data);
+                Toast.show({
+                    type: 'error',
+                    text1: 'Foutje',
+                    text2: 'Opslaan van de streak is mislukt',
+                })
             }
         } catch (e) {
             console.log("Er gaat iets fout met het updaten van de streak", e);
@@ -194,13 +207,21 @@ export default function HomeScreen({navigation}) {
             setDailyTask(true);
             updateStreak()
         } else {
-            alert("Ho even, Probeer jij vals te spelen?\nJe mag maar 1 keer per dag op Ja drukken.");
+            Toast.show({
+                type: 'info',
+                text1: 'Ho even, Probeer jij vals te spelen?',
+                text2: 'Je mag maar 1 keer per dag op Ja drukken.',
+            })
         }
     };
 
     const handleNeePressed = () => {
         if (dailyTask === true) {
-            alert("jij hebt vandaag al goed je fruit op heb je ingevuld!");
+            Toast.show({
+                type: 'info',
+                text1: 'Dit kan niet!',
+                text2: 'Jij hebt vandaag al doorgegeven dat je je fruit op hebt!',
+            })
         } else {
             setBgColor('#fd9a90');
         }

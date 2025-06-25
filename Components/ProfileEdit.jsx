@@ -6,6 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import axios from 'axios'
 import {useFocusEffect} from '@react-navigation/native'
 import {useCallback} from 'react'
+import Toast from "react-native-toast-message";
 
 
 export default function ProfileEdit({navigation}) {
@@ -129,7 +130,11 @@ export default function ProfileEdit({navigation}) {
                         navigation.goBack()
                     } catch (error) {
                         console.error('Fout bij opslaan profiel:', error)
-                        Alert.alert('Fout', 'Profiel kon niet worden opgeslagen.')
+                        Toast.show({
+                            type: 'error',
+                            text1: 'Foutje',
+                            text2: 'Profiel kon niet worden opgeslagen.',
+                        })
                     }
                 }}>
                     <Text style={styles.saveButtonText}>Opslaan</Text>

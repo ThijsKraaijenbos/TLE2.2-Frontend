@@ -7,6 +7,7 @@ import UserList from '../Components/ScreenComponents/UserList.jsx';
 import React, {useEffect, useState} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useFocusEffect} from "@react-navigation/native";
+import Toast from "react-native-toast-message";
 
 const User_Token = 'user_login_token'
 
@@ -45,7 +46,11 @@ export default function SocialTab({navigation}) {
             if (response.ok) {
                 setFriends(data?.friends)
             } else {
-                alert("er gaat iets niet goed met het verwerken van jouw vrienden")
+                Toast.show({
+                    type: 'error',
+                    text1: 'We kunnen ze niet vinden',
+                    text2: 'Er gaat iets niet goed met het verwerken van jouw vrienden',
+                })
             }
         } catch (error) {
             console.error('Fout bij ophalen gebruikers:', error);
@@ -72,7 +77,11 @@ export default function SocialTab({navigation}) {
         const alreadyFriend = friends.some(friend => friend.email?.toLowerCase() === email);
 
         if (alreadyFriend) {
-            alert("Jullie zijn al vrienden");
+            Toast.show({
+                type: 'info',
+                text1: 'Supervrienden?',
+                text2: 'Jullie zijn al vrienden.',
+            })
             return;
         }
         try {
@@ -93,10 +102,18 @@ export default function SocialTab({navigation}) {
                 await fetchFriends(userAuth);
                 setFriendsMail('');
             } else {
-                alert(data?.message || "Er ging iets mis");
+                Toast.show({
+                    type: 'error',
+                    text1: 'Foutje',
+                    text2: data.message,
+                })
             }
         } catch (e) {
-            alert("Er komt niets terug: " + e.message);
+            Toast.show({
+                type: 'error',
+                text1: 'Er komt niets terug',
+                text2: e.message,
+            })
         }
     };
 

@@ -2,6 +2,7 @@ import {Pressable, Image, Text, TextInput, View, StyleSheet, Alert} from "react-
 import {useEffect, useState} from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import { useProfile } from './ScreenComponents/ProfileContext'
+import Toast from "react-native-toast-message";
 
 
 const User_Token = 'user_login_token'
@@ -27,13 +28,11 @@ export default function Login({navigation}) {
     }, []);
     const HandleLogin = async () => {
         if (!email || !password) {
-            Alert.alert(
-                'Oeps, bijna goed!',
-                'Vul een e-mail en een wachtwoord in.',
-                [
-                    {text: 'OK'},
-                ]
-            )
+            Toast.show({
+                type: 'info',
+                text1: 'Oeps, bijna goed!',
+                text2: `Vul een e-mail en een wachtwoord in.`,
+            })
             return
         }
 
@@ -78,11 +77,19 @@ export default function Login({navigation}) {
 
                 navigation.navigate('Home');
             } else {
-                Alert.alert('Login mislukt', data.message || 'Onjuiste inloggegevens.');
+                Toast.show({
+                    type: 'error',
+                    text1: 'Login mislukt',
+                    text2: data.message || 'Onjuiste inloggegevens.',
+                })
             }
         } catch (error) {
             console.error('Login fout:', error)
-            Alert.alert('Fout', 'Er is iets misgegaan met de verbinding.')
+            Toast.show({
+                type: 'error',
+                text1: 'Foutje',
+                text2: 'Er is iets misgegaan met de verbinding.',
+            })
         }
     }
     return (

@@ -17,6 +17,7 @@ import ProfileIcon from './ScreenComponents/ProfileIcon';
 import BottomNavigation from "./ScreenComponents/BottomNavigation";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {useFocusEffect} from "@react-navigation/native";
+import Toast from "react-native-toast-message";
 
 const User_Token = "user_login_token"
 
@@ -66,10 +67,18 @@ export default function FruitList({navigation}) {
                         .map(item => ({label: item.name, value: item.id}))
                 );
             } else {
-                Alert.alert('Fout', data.message || 'Fruit ophalen mislukt.');
+                Toast.show({
+                    type: 'error',
+                    text1: 'Foutje',
+                    text2: data.message || 'Fruit ophalen mislukt.',
+                })
             }
         } catch (err) {
-            Alert.alert('Fout', `Er is een netwerkfout opgetreden: ${err}`);
+            Toast.show({
+                type: 'error',
+                text1: 'Foutje',
+                text2: `Er is een netwerkfout opgetreden: ${err}`,
+            })
         }
     };
 
@@ -118,7 +127,11 @@ export default function FruitList({navigation}) {
 
 
         } catch (error) {
-            Alert.alert('Fout', `Kon status niet bijwerken: ${error.message}`);
+            Toast.show({
+                type: 'error',
+                text1: 'Foutje',
+                text2: `Kon status niet bijwerken: ${error.message}`,
+            })
         }
     };
 
