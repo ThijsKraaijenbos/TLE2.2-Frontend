@@ -45,7 +45,6 @@ export default function HomeScreen({navigation}) {
         } catch (e) {
             console.log("Er gaat iets fout met het ophalen van de gebruikersinformatie", e)
         }
-
     }
     const fetchUserInfo = async (token) => {
         try {

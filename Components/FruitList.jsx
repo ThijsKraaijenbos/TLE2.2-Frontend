@@ -73,15 +73,15 @@ export default function FruitList({navigation}) {
         }
     };
 
-    const toggleFruitStatus = async (fruitid) => {
+    const toggleFruitStatus = async (fruitname) => {
 
-        const fruit = fruitdata.find(f => f.id === fruitid);
+        const fruit = fruitdata.find(f => f.name === fruitname);
         if (!fruit) return;
 
         const updatedEaten = !fruit.user_preference.has_eaten_before;
 
         try {
-            const response = await fetch(`http://145.24.223.94/api/fruits/${fruitid}/togglePreference`, {
+            const response = await fetch(`http://145.24.223.94/api/fruits/${fruit.id}/togglePreference`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -95,17 +95,28 @@ export default function FruitList({navigation}) {
             if (!response.ok) {
                 throw new Error('Update failed');
             }
+            const data = await response.json()
+            console.log(data)
 
 
+            await LoadFruits();
 
             // Locally update the state after a successful update
             setFruitdata(prev =>
                 prev.map(f =>
-                    f.id === fruitid
-                        ? {...f, has_eaten_before: updatedEaten}
+                    f.id === fruit.id
+                        ? {
+                            ...f,
+                            user_preference: {
+                                ...f.user_preference,
+                                has_eaten_before: updatedEaten
+                            }
+                        }
                         : f
                 )
             );
+
+
         } catch (error) {
             Alert.alert('Fout', `Kon status niet bijwerken: ${error.message}`);
         }
@@ -176,15 +187,18 @@ export default function FruitList({navigation}) {
                         value={selectedFruit}
                         items={dropdownItems}
                         setOpen={setOpen}
-                        setValue={(selected) => {
-                            toggleFruitStatus(selected);
-                            setSelectedFruit(null); // optional
-                        }}
+                        setValue={setSelectedFruit}
                         setItems={() => {}}
                         placeholder="Heb je een nieuw iets op? vink hem aan!"
                         searchable={true}
                         searchPlaceholder="Zoek fruit..."
                         listMode="MODAL"
+                        onChangeValue={(value) => {
+                            if (value) {
+                                toggleFruitStatus(dropdownItems.find(f => f.value === value)?.label);
+                                setSelectedFruit(null);
+                            }
+                        }}
                     />
                 </View>
 
@@ -212,7 +226,7 @@ export default function FruitList({navigation}) {
                         >
                             <Image
                                 source={
-                                    typeof item.image === 'string'
+                                    typeof item.big_img_file_path === 'string'
                                         ? { uri: item.image }
                                         : item.image
                                 }
