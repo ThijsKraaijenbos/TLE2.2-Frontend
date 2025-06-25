@@ -185,7 +185,7 @@ const styles = StyleSheet.create({
     },
     imageStyle: {
         opacity: 0.08, // adjust for faintness
-        resizeMode: 'cover',
+        objectFit: "contain"
     },
     container: {
         padding: 16,
@@ -236,6 +236,7 @@ const styles = StyleSheet.create({
         height: 140,
         borderRadius: 12,
         marginVertical: 14,
+        objectFit: "contain",
     },
     fruitName: {
         fontSize: 28,
