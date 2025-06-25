@@ -2,14 +2,16 @@ import {Pressable, StyleSheet, Text, View, ImageBackground, Image} from "react-n
 import {Ionicons} from "@expo/vector-icons"
 import {LinearGradient} from 'expo-linear-gradient'
 import {useProfile} from './ScreenComponents/ProfileContext'
-import {useEffect, useState} from "react";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import axios from "axios";
+import {useEffect, useState} from "react"
+import AsyncStorage from "@react-native-async-storage/async-storage"
+import axios from "axios"
+import Toast from 'react-native-toast-message'
 
 
 export default function ProgressList({navigation}) {
 
     const [streak, setStreak] = useState('')
+    const [fruitProgress, setFruitProgress] = useState({eaten: 0, total: 0})
 
     useEffect(() => {
         async function loadProfile() {
@@ -32,8 +34,33 @@ export default function ProgressList({navigation}) {
             }
         }
 
+        async function fetchFruitProgress() {
+            try {
+                const token = await AsyncStorage.getItem('user_login_token')
+                const response = await axios.get('http://145.24.223.94/api/fruits', {
+                    headers: {
+                        'X-user-login-token': token,
+                        'Authorization': 'Bearer g360GNGOWNvaZ3rNM4YayTHnsV5ntsxVAPn8otxmdb1d2ed8',
+                        'Content-Type': 'application/json',
+                    }
+                })
+
+                const fruit = response.data.data
+
+                const total = fruit.length
+                const eaten = fruit.filter(f => f.user_preference?.has_eaten_before === 1).length
+
+                setFruitProgress({eaten, total})
+
+            } catch (err) {
+                console.error('Fout bij ophalen fruit voortgang:', err)
+            }
+        }
+
         loadProfile()
+        fetchFruitProgress()
     }, [])
+
 
     return (
         <ImageBackground
@@ -75,7 +102,7 @@ export default function ProgressList({navigation}) {
                                 <Text style={styles.title}>Fruit</Text>
                                 <Text style={styles.title2}>gegeten</Text>
                             </View>
-                            <Text style={styles.title3}>56 / 123</Text>
+                            <Text style={styles.title3}>{fruitProgress.eaten} / {fruitProgress.total}</Text>
                         </LinearGradient>
                     </Pressable>
                     <Pressable onPress={() => navigation.navigate('TrophiesList')}>
@@ -89,21 +116,27 @@ export default function ProgressList({navigation}) {
                                 <Text style={styles.title}>Trofeeën</Text>
                                 <Text style={styles.title2}>behaald</Text>
                             </View>
-                            <Text style={styles.title3}>5 / 23</Text>
+                            <Text style={styles.title3}>30 / 30</Text>
                         </LinearGradient>
                     </Pressable>
-                    <LinearGradient
-                        colors={['#3F5023', '#A8D363']}
-                        start={{x: 0, y: 0}}
-                        end={{x: 1, y: 0}}
-                        style={styles.box}
-                    >
-                        <View>
-                            <Text style={styles.title}>Streak</Text>
-                            <Text style={styles.title2}>record</Text>
-                        </View>
-                        <Text style={styles.title3}>{streak} Dagen</Text>
-                    </LinearGradient>
+                    <Pressable onPress={() => Toast.show({
+                        type: 'success',
+                        text1: 'Goed Gedaan!',
+                        text2: 'Probeer je streak te verhogen door dagelijks fruit te eten.',
+                    })}>
+                        <LinearGradient
+                            colors={['#3F5023', '#A8D363']}
+                            start={{x: 0, y: 0}}
+                            end={{x: 1, y: 0}}
+                            style={styles.box}
+                        >
+                            <View>
+                                <Text style={styles.title}>Streak</Text>
+                                <Text style={styles.title2}>record</Text>
+                            </View>
+                            <Text style={styles.title3}>{streak} Dagen</Text>
+                        </LinearGradient>
+                    </Pressable>
                 </View>
             </View>
         </ImageBackground>
@@ -193,4 +226,4 @@ const styles = StyleSheet.create({
         paddingVertical: 10,
         textAlign: "center"
     },
-});
+})
