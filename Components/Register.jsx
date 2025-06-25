@@ -3,8 +3,8 @@ import {useState} from "react";
 import Constants from 'expo-constants';
 import Toast from "react-native-toast-message";
 
-const { AUTH_TOKEN } = Constants.expoConfig.extra;
-export default function Register({navigation}){
+const {AUTH_TOKEN} = Constants.expoConfig.extra;
+export default function Register({navigation}) {
 
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
@@ -29,6 +29,17 @@ export default function Register({navigation}){
             })
             return;
         }
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        if (!emailRegex.test(email)) {
+            Toast.show({
+                type: 'error',
+                text1: 'Ongeldig e-mailadres',
+                text2: 'Typ een correct e-mailadres, zoals naam@voorbeeld.nl.',
+            });
+            return;
+        }
         const role = "child"
 
         try {
@@ -38,7 +49,7 @@ export default function Register({navigation}){
                     'Content-Type': 'application/json',
                     'Authorization': 'Bearer g360GNGOWNvaZ3rNM4YayTHnsV5ntsxVAPn8otxmdb1d2ed8'
                 },
-                body: JSON.stringify({ name: name, email: email, password: password, role: role }),
+                body: JSON.stringify({name: name, email: email, password: password, role: role}),
             });
 
             const data = await response.json();
