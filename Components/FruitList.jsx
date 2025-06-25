@@ -225,11 +225,7 @@ export default function FruitList({navigation}) {
                             ]}
                         >
                             <Image
-                                source={
-                                    typeof item.big_img_file_path === 'string'
-                                        ? { uri: item.image }
-                                        : item.image
-                                }
+                                source={{ uri: item.big_img_file_path }}
                                 style={styles.fruitImage}
                             />
                                 <Text style={styles.fruitName}>
