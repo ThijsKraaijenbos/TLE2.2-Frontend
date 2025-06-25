@@ -1,6 +1,7 @@
 import {Pressable, Image, Text, TextInput, View, StyleSheet, Alert} from "react-native";
 import {useState} from "react";
 import Constants from 'expo-constants';
+import Toast from "react-native-toast-message";
 
 const { AUTH_TOKEN } = Constants.expoConfig.extra;
 export default function Register({navigation}){
@@ -12,12 +13,20 @@ export default function Register({navigation}){
     const HandleRegistration = async () => {
 
         if (!name || !email || !password || !password2) {
-            Alert.alert('Vul alles in', 'Alle velden zijn verplicht.');
+            Toast.show({
+                type: 'error',
+                text1: 'Vul alles in',
+                text2: 'Alle velden zijn verplicht.',
+            })
             return;
         }
 
         if (password !== password2) {
-            Alert.alert('Wachtwoorden komen niet overeen', 'Typ het wachtwoord opnieuw.');
+            Toast.show({
+                type: 'error',
+                text1: 'Wachtwoorden komen niet overeen',
+                text2: `Typ het wachtwoord opnieuw.`,
+            })
             return;
         }
         const role = "child"
@@ -35,13 +44,25 @@ export default function Register({navigation}){
             const data = await response.json();
             console.log("RESPONSE TEXT:", data);
             if (response.ok) {
-                Alert.alert('Gelukt', 'Registratie voltooid!');
+                Toast.show({
+                    type: 'success',
+                    text1: 'Gelukt',
+                    text2: `Registratie voltooid!`,
+                })
                 navigation.navigate('Explain');
             } else {
-                Alert.alert('Fout', data.message || 'Registratie mislukt.');
+                Toast.show({
+                    type: 'error',
+                    text1: 'Foutje',
+                    text2: data.message || 'Registratie mislukt.',
+                })
             }
         } catch (err) {
-            Alert.alert('Fout', `Er is een netwerkfout opgetreden., ${err}`);
+            Toast.show({
+                type: 'error',
+                text1: 'Foutje',
+                text2: `Er is een netwerkfout opgetreden: ${err}`,
+            })
         }
     }
 
